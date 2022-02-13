@@ -17,6 +17,7 @@ import com.jakewharton.rxrelay.BehaviorRelay
 import com.jakewharton.rxrelay.PublishRelay
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.models.Category
+import eu.kanade.tachiyomi.data.database.models.LibraryManga
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.library.LibraryUpdateService
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
@@ -151,13 +152,36 @@ class LibraryController(
 
         if (preferences.categoryNumberOfItems().get() && libraryMangaRelay.hasValue()) {
             libraryMangaRelay.value.mangas.let { mangaMap ->
-                if (!showCategoryTabs || adapter?.categories?.size == 1) {
-                    title += " (${mangaMap[currentCategory?.id]?.size ?: 0})"
+                title += if (title == resources?.getString(R.string.label_library) /*!showCategoryTabs || adapter?.categories?.size == 1*/) {
+                    " (${getTotalLibraryCount(mangaMap)})"
+                } else {
+                    " (${mangaMap[currentCategory?.id]?.size ?: 0})"
                 }
             }
         }
 
         currentTitle = title
+    }
+
+    /**
+     * Iterates through all mangas in all categories.
+     * If the manga is not already in the list, add them.
+     *
+     * @param mangaMap The Map with all the categories and mangas.
+     * @return the count of all unique mangas.
+     */
+    private fun getTotalLibraryCount(mangaMap: Map<Int, List<LibraryItem>>): Int {
+        val mangas: MutableList<LibraryManga> = mutableListOf()
+        
+        mangaMap.forEach { mangaMapIt ->
+            mangaMapIt.value.forEach { libraryItemIt ->
+                if (!mangas.contains(libraryItemIt.manga)) {
+                    mangas.add(libraryItemIt.manga)
+                }
+            }
+        }
+
+        return mangas.size
     }
 
     override fun createPresenter(): LibraryPresenter {
