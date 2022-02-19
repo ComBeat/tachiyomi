@@ -17,7 +17,6 @@ import com.jakewharton.rxrelay.BehaviorRelay
 import com.jakewharton.rxrelay.PublishRelay
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.models.Category
-import eu.kanade.tachiyomi.data.database.models.LibraryManga
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.library.LibraryUpdateService
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
@@ -152,7 +151,7 @@ class LibraryController(
 
         if (preferences.categoryNumberOfItems().get() && libraryMangaRelay.hasValue()) {
             libraryMangaRelay.value.mangas.let { mangaMap ->
-                title += if (title == resources?.getString(R.string.label_library) /*!showCategoryTabs || adapter?.categories?.size == 1*/) {
+                title += if (title == resources?.getString(R.string.label_library)) {
                     " (${getTotalLibraryCount(mangaMap)})"
                 } else {
                     " (${mangaMap[currentCategory?.id]?.size ?: 0})"
@@ -171,8 +170,8 @@ class LibraryController(
      * @return the count of all unique mangas.
      */
     private fun getTotalLibraryCount(mangaMap: Map<Int, List<LibraryItem>>): Int {
-        val mangas: MutableList<LibraryManga> = mutableListOf()
-        
+        val mangas: MutableList<Manga> = mutableListOf()
+
         mangaMap.forEach { mangaMapIt ->
             mangaMapIt.value.forEach { libraryItemIt ->
                 if (!mangas.contains(libraryItemIt.manga)) {
