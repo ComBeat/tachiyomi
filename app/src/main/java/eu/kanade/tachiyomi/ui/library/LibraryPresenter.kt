@@ -1,6 +1,7 @@
 package eu.kanade.tachiyomi.ui.library
 
 import android.os.Bundle
+import android.util.Log
 import com.jakewharton.rxrelay.BehaviorRelay
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
@@ -37,7 +38,7 @@ import java.util.Locale
 /**
  * Class containing library information.
  */
-private data class Library(val categories: List<Category>, val mangaMap: LibraryMap)
+private data class Library(val categories: List<Category>, val mangaMap: LibraryMap, val libraryCount: Int)
 
 /**
  * Typealias for the library manga, using the category as keys, and list of manga as values.
@@ -105,8 +106,8 @@ class LibraryPresenter(
                     lib.copy(mangaMap = applySort(lib.categories, lib.mangaMap))
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeLatestCache({ view, (categories, mangaMap) ->
-                    view.onNextLibraryUpdate(categories, mangaMap)
+                .subscribeLatestCache({ view, (categories, mangaMap, libraryCount) ->
+                    view.onNextLibraryUpdate(categories, mangaMap, libraryCount)
                 })
         }
     }
@@ -346,9 +347,17 @@ class LibraryPresenter(
                     libraryItem.displayMode = category.displayMode
                 }
             }
+            Log.d("Presenter", categories.toString())
 
+            val dbCategoriess = db.getCategories().executeAsBlocking()
+            dbCategoriess.forEach {
+                Log.d("DbCategory", it.toString())
+            }
             this.categories = categories
-            Library(categories, libraryManga)
+            Log.d("Presenter", "getLibraryObservable called")
+            Log.d("Presenter", libraryManga.toString())
+            val libraryMangaCount = 420 // TODO add method the counts the mangas
+            Library(categories, libraryManga, libraryMangaCount)
         }
     }
 
@@ -358,6 +367,7 @@ class LibraryPresenter(
      * @return an observable of the categories.
      */
     private fun getCategoriesObservable(): Observable<List<Category>> {
+        Log.d("Presenter getCategoriesObservable", db.getLibraryMangas().toString())
         return db.getCategories().asRxObservable()
     }
 

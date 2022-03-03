@@ -244,6 +244,8 @@ class PreferencesHelper(val context: Context) {
 
     fun categoryNumberOfItems() = flowPrefs.getBoolean("display_number_of_items", false)
 
+    fun libraryTotalNumber() = flowPrefs.getBoolean("display_library_items", false)
+
     fun filterDownloaded() = flowPrefs.getInt(Keys.filterDownloaded, ExtendedNavigationView.Item.TriStateGroup.State.IGNORE.value)
 
     fun filterUnread() = flowPrefs.getInt(Keys.filterUnread, ExtendedNavigationView.Item.TriStateGroup.State.IGNORE.value)

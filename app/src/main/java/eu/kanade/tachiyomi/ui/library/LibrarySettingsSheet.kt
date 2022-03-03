@@ -396,6 +396,7 @@ class LibrarySettingsSheet(
         inner class TabsGroup : Group {
             private val showTabs = Item.CheckboxGroup(R.string.action_display_show_tabs, this)
             private val showNumberOfItems = Item.CheckboxGroup(R.string.action_display_show_number_of_items, this)
+            // private val showLibraryNumberOfItems = It
 
             override val header = Item.Header(R.string.tabs_header)
             override val items = listOf(showTabs, showNumberOfItems)

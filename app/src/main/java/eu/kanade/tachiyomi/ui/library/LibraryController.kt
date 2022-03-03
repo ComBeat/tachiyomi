@@ -2,6 +2,7 @@ package eu.kanade.tachiyomi.ui.library
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -142,6 +143,8 @@ class LibraryController(
     private fun updateTitle() {
         val showCategoryTabs = preferences.categoryTabs().get()
         val currentCategory = adapter?.categories?.getOrNull(binding.libraryPager.currentItem)
+        val temp = true // preferences.libraryTotalNumber().get()
+        adapter?.itemsInLibary
 
         var title = if (showCategoryTabs) {
             resources?.getString(R.string.label_library)
@@ -151,13 +154,18 @@ class LibraryController(
 
         if (preferences.categoryNumberOfItems().get() && libraryMangaRelay.hasValue()) {
             libraryMangaRelay.value.mangas.let { mangaMap ->
-                title += if (title == resources?.getString(R.string.label_library)) {
-                    " (${getTotalLibraryCount(mangaMap)})"
+                title += if (title == resources?.getString(R.string.label_library) && temp) {
+                    // " (${getTotalLibraryCount(mangaMap)})"
+                    " (${adapter?.itemsInLibary ?: 0})"
                 } else {
                     " (${mangaMap[currentCategory?.id]?.size ?: 0})"
                 }
+                Log.d("Controller", "Title got updatet")
             }
         }
+        Log.d("Controller currentCategory", currentCategory?.id.toString())
+        Log.d("Controller activeCategory", activeCategory.toString())
+        Log.d("Preferences", temp.toString())
 
         currentTitle = title
     }
@@ -167,7 +175,7 @@ class LibraryController(
      * If the manga is not already in the list, add them.
      *
      * @param mangaMap The Map with all the categories and mangas.
-     * @return the count of all unique mangas.
+     * @return the number of all unique mangas.
      */
     private fun getTotalLibraryCount(mangaMap: Map<Int, List<LibraryItem>>): Int {
         val mangas: MutableList<Manga> = mutableListOf()
@@ -179,6 +187,7 @@ class LibraryController(
                 }
             }
         }
+        Log.d("Controller", "getTotalLibraryCount called")
 
         return mangas.size
     }
@@ -287,7 +296,7 @@ class LibraryController(
         }
     }
 
-    fun onNextLibraryUpdate(categories: List<Category>, mangaMap: Map<Int, List<LibraryItem>>) {
+    fun onNextLibraryUpdate(categories: List<Category>, mangaMap: Map<Int, List<LibraryItem>>, libraryCount: Int) {
         val view = view ?: return
         val adapter = adapter ?: return
 
@@ -321,6 +330,10 @@ class LibraryController(
 
         // Restore active category.
         binding.libraryPager.setCurrentItem(activeCat, false)
+
+        // TODO maybe set lib count of adapter here
+        adapter.itemsInLibary = libraryCount
+        Log.d("Controller", "onNextLibraryUpdate got called")
 
         // Trigger display of tabs
         onTabsSettingsChanged()

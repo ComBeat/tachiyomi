@@ -47,6 +47,14 @@ class LibraryAdapter(
             }
         }
 
+    var itemsInLibary: Int = 0
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
+
     private var boundViews = arrayListOf<View>()
 
     private val isPerCategory by lazy { preferences.categorizedDisplaySettings().get() }
