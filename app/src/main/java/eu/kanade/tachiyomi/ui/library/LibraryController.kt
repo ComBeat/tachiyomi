@@ -155,41 +155,14 @@ class LibraryController(
         if (preferences.categoryNumberOfItems().get() && libraryMangaRelay.hasValue()) {
             libraryMangaRelay.value.mangas.let { mangaMap ->
                 title += if (title == resources?.getString(R.string.label_library) && temp) {
-                    // " (${getTotalLibraryCount(mangaMap)})"
                     " (${adapter?.itemsInLibary ?: 0})"
                 } else {
                     " (${mangaMap[currentCategory?.id]?.size ?: 0})"
                 }
-                Log.d("Controller", "Title got updatet")
             }
         }
-        Log.d("Controller currentCategory", currentCategory?.id.toString())
-        Log.d("Controller activeCategory", activeCategory.toString())
-        Log.d("Preferences", temp.toString())
 
         currentTitle = title
-    }
-
-    /**
-     * Iterates through all mangas in all categories.
-     * If the manga is not already in the list, add them.
-     *
-     * @param mangaMap The Map with all the categories and mangas.
-     * @return the number of all unique mangas.
-     */
-    private fun getTotalLibraryCount(mangaMap: Map<Int, List<LibraryItem>>): Int {
-        val mangas: MutableList<Manga> = mutableListOf()
-
-        mangaMap.forEach { mangaMapIt ->
-            mangaMapIt.value.forEach { libraryItemIt ->
-                if (!mangas.contains(libraryItemIt.manga)) {
-                    mangas.add(libraryItemIt.manga)
-                }
-            }
-        }
-        Log.d("Controller", "getTotalLibraryCount called")
-
-        return mangas.size
     }
 
     override fun createPresenter(): LibraryPresenter {

@@ -356,9 +356,33 @@ class LibraryPresenter(
             this.categories = categories
             Log.d("Presenter", "getLibraryObservable called")
             Log.d("Presenter", libraryManga.toString())
-            val libraryMangaCount = 420 // TODO add method the counts the mangas
+            val libraryMangaCount = getTotalLibraryCount(libraryManga) // TODO add method the counts the mangas
+
             Library(categories, libraryManga, libraryMangaCount)
         }
+    }
+
+    /**
+     * Iterates through all mangas in all categories.
+     * If the manga is not already in the list, add them.
+     *
+     * @param mangaMap The Map with all the categories and mangas.
+     * @return the number of all unique mangas.
+     */
+    private fun getTotalLibraryCount(mangaMap: Map<Int, List<LibraryItem>>): Int {
+        val mangas: MutableList<Manga> = mutableListOf()
+
+        mangaMap.forEach { mangaMapIt ->
+            mangaMapIt.value.forEach { libraryItemIt ->
+                if (!mangas.contains(libraryItemIt.manga)) {
+                    mangas.add(libraryItemIt.manga)
+                }
+            }
+        }
+
+        Log.d("Presenter", "getTotalLibraryCount called")
+
+        return mangas.size
     }
 
     /**
