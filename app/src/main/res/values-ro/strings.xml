@@ -574,7 +574,7 @@
     <string name="include">Includeți: %s</string>
     <string name="pref_library_update_categories_details">Manga din categoriile excluse nu vor fi actualizate, chiar dacă se află și în categoriile incluse.</string>
     <string name="action_show_errors">Afișați erorile</string>
-    <string name="action_display_show_number_of_items">Afișare număr de elemente</string>
+    <string name="action_display_show_number_of_category_items">Afișare număr de elemente</string>
     <string name="none">Nici unul</string>
     <string name="pref_dns_over_https">DNS peste HTTPS</string>
     <string name="channel_crash_logs">Jurnale de erori fatale</string>

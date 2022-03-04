@@ -565,7 +565,7 @@
     <string name="action_order_by_chapter_number">Κατά αριθμό κεφαλαίου</string>
     <string name="action_order_by_upload_date">Κατά ημερομηνία μεταφόρτωσης</string>
     <string name="action_filter_tracked">Tracked</string>
-    <string name="action_display_show_number_of_items">Εμφάνιση αριθμού στοιχείων</string>
+    <string name="action_display_show_number_of_category_items">Εμφάνιση αριθμού στοιχείων</string>
     <string name="right_and_left_nav">Δεξιά και Aριστερά</string>
     <string name="pref_dual_page_split">Διπλή διαίρεση σελίδας</string>
     <string name="pref_dual_page_invert_summary">Εάν η τοποθέτηση του διαχωρισμού διπλής σελίδας δεν ταιριάζει με την κατεύθυνση ανάγνωσης</string>

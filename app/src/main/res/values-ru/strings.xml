@@ -588,7 +588,7 @@
     <string name="action_order_by_chapter_number">Номер главы</string>
     <string name="action_order_by_upload_date">Дата загрузки</string>
     <string name="action_filter_tracked">Отслеживается</string>
-    <string name="action_display_show_number_of_items">Количество серий</string>
+    <string name="action_display_show_number_of_category_items">Количество серий</string>
     <string name="right_and_left_nav">Справа и слева</string>
     <string name="pref_dual_page_split">Двухстраничное разделение</string>
     <string name="pref_dual_page_invert">Двухстраничное разделение наоборот</string>

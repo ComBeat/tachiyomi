@@ -515,6 +515,6 @@
     <string name="right_and_left_nav">მარჯვენა და მარცხენა</string>
     <string name="pref_dual_page_split">გვერდების ორმაგი გაყოფა (ალფა)</string>
     <string name="parental_controls_info">ეს არ აღმოფხვრავს პროგრამაში NSFW (18+) შიგთავსის არაოფიციალურ, ან შესაძლო არასწორად მონიშნული გაფართოებებოიდან გამოჩენას.</string>
-    <string name="action_display_show_number_of_items">საგნების რაოდენობის ჩვენება</string>
+    <string name="action_display_show_number_of_category_items">საგნების რაოდენობის ჩვენება</string>
     <string name="action_search_settings">პარამეტრების ძიება</string>
 </resources>

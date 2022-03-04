@@ -565,7 +565,7 @@
     <string name="action_order_by_chapter_number">Nach Kapitelnummer</string>
     <string name="action_order_by_upload_date">Nach Upload-Datum</string>
     <string name="action_filter_tracked">Getrackt</string>
-    <string name="action_display_show_number_of_items">Anzahl der Elemente anzeigen</string>
+    <string name="action_display_show_number_of_category_items">Anzahl der Elemente anzeigen</string>
     <string name="right_and_left_nav">Rechts und Links</string>
     <string name="pref_dual_page_split">Doppelseiten aufteilen</string>
     <string name="pref_dual_page_invert_summary">Falls die Platzierung der aufgeteilten Doppelseite nicht mit der Leserichtung übereinstimmt</string>

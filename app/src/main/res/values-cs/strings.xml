@@ -479,7 +479,7 @@
     <string name="action_unpin">Odepnout</string>
     <string name="action_pin">Připnout</string>
     <string name="action_disable">Zakázat</string>
-    <string name="action_display_show_number_of_items">Zobrazovat počet položek</string>
+    <string name="action_display_show_number_of_category_items">Zobrazovat počet položek</string>
     <string name="action_start">Začít</string>
     <string name="channel_crash_logs">Záznamy o pádech</string>
     <string name="channel_ext_updates">Aktualizace rozšíření</string>

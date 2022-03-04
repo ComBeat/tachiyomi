@@ -143,7 +143,7 @@
     <string name="action_unpin">Atsegti</string>
     <string name="action_pin">Prisegti</string>
     <string name="action_disable">Išjungti</string>
-    <string name="action_display_show_number_of_items">Rodyti įrašų skaičių</string>
+    <string name="action_display_show_number_of_category_items">Rodyti įrašų skaičių</string>
     <string name="action_display_show_tabs">Rodyti kategorijų korteles</string>
     <string name="action_display_local_badge">Išsaugoti ženklai</string>
     <string name="action_display_unread_badge">Neskaitymo ženklai</string>

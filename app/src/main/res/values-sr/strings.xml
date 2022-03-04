@@ -472,7 +472,7 @@
     <string name="pref_category_navigation">Navigacija</string>
     <string name="action_start_downloading_now">Покрени преузимање одмах</string>
     <string name="pref_relative_time_long">Dugo (Kratko+, pre n dana)</string>
-    <string name="action_display_show_number_of_items">Prikaži broj stavki</string>
+    <string name="action_display_show_number_of_category_items">Prikaži broj stavki</string>
     <string name="cancel_all_for_series">Prekini sve za ovaj serijal</string>
     <string name="action_desc">Opadajuće</string>
     <string name="action_show_errors">Prikaz detalja greške</string>

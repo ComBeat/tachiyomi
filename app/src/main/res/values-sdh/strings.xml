@@ -113,7 +113,7 @@
     <string name="action_order_by_chapter_number">بە پێی ژمارەی چاپتەر</string>
     <string name="action_move_to_top">گواستنەوە بۆ سەرەوە</string>
     <string name="action_display_download_badge">چاپتەری داونلۆد کراو</string>
-    <string name="action_display_show_number_of_items">پیشاندانی ژمارەی ئایتمەکان</string>
+    <string name="action_display_show_number_of_category_items">پیشاندانی ژمارەی ئایتمەکان</string>
     <string name="action_disable">ناچالاککردن</string>
     <string name="action_pin">جێگیرکردن</string>
     <string name="loading">دۆخی بارکردن…</string>

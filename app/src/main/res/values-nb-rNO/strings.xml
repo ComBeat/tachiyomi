@@ -580,7 +580,7 @@
     <string name="nav_zone_next">Neste</string>
     <string name="nav_zone_prev">Forrige</string>
     <string name="right_and_left_nav">Høyre og Venstre</string>
-    <string name="action_display_show_number_of_items">Vis antall gjenstander</string>
+    <string name="action_display_show_number_of_category_items">Vis antall gjenstander</string>
     <string name="exclude">Eksluder: %s</string>
     <string name="include">Inkluder: %s</string>
     <string name="action_sort_chapter_fetch_date">Dato hentet</string>

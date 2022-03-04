@@ -566,7 +566,7 @@
     <string name="action_order_by_upload_date">Por fecha de subida</string>
     <string name="action_filter_tracked">Rastreado</string>
     <string name="right_and_left_nav">Derecha e izquierda</string>
-    <string name="action_display_show_number_of_items">Mostrar cantidad de elementos</string>
+    <string name="action_display_show_number_of_category_items">Mostrar cantidad de elementos</string>
     <string name="none">Ninguno</string>
     <string name="action_show_errors">Presione para ver detalladamente el error</string>
     <string name="pref_category_auto_download">Descarga automática</string>

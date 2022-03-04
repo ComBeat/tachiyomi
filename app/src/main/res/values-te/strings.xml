@@ -93,7 +93,7 @@
     <string name="action_display">ప్రదర్శన</string>
     <string name="action_display_list">జాబితా</string>
     <string name="action_display_show_tabs">విభాగ మీటలను చూపుము</string>
-    <string name="action_display_show_number_of_items">వస్తు సంఖ్యను చూపుము</string>
+    <string name="action_display_show_number_of_category_items">వస్తు సంఖ్యను చూపుము</string>
     <string name="action_disable">అశక్త పరుచుము</string>
     <string name="action_pin">పిన్</string>
     <string name="action_unpin">పిన్నును తీయుము</string>

@@ -15,7 +15,7 @@
     <string name="action_unpin">Адмацаваць</string>
     <string name="action_pin">Замацаваць</string>
     <string name="action_disable">Адключыць</string>
-    <string name="action_display_show_number_of_items">Паказаць колькасць прадметаў</string>
+    <string name="action_display_show_number_of_category_items">Паказаць колькасць прадметаў</string>
     <string name="action_display_show_tabs">Паказаць укладкі катэгорый</string>
     <string name="action_display_local_badge">Значкі лакальных</string>
     <string name="action_display_download_badge">Значкі загружаных</string>
