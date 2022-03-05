@@ -420,7 +420,6 @@ class LibrarySettingsSheet(
                     }
                     showNumberOfLibraryItems -> preferences.libraryNumberOfItems().set(item.checked)
                 }
-
                 adapter.notifyItemChanged(item)
             }
         }

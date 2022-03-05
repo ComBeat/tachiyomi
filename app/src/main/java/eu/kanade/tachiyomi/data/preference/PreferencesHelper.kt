@@ -242,9 +242,9 @@ class PreferencesHelper(val context: Context) {
 
     fun categoryTabs() = flowPrefs.getBoolean("display_category_tabs", true)
 
-    fun categoryNumberOfItems() = flowPrefs.getBoolean("display_number_of_items", false)
+    fun categoryNumberOfItems() = flowPrefs.getBoolean("display_number_of_category_items", false)
 
-    fun libraryNumberOfItems() = flowPrefs.getBoolean("display_library_items", false)
+    fun libraryNumberOfItems() = flowPrefs.getBoolean("display_number_of_library_items", false)
 
     fun filterDownloaded() = flowPrefs.getInt(Keys.filterDownloaded, ExtendedNavigationView.Item.TriStateGroup.State.IGNORE.value)
 

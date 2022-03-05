@@ -1,7 +1,6 @@
 package eu.kanade.tachiyomi.data.cache
 
 import android.content.Context
-import android.util.Log
 import coil.imageLoader
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.util.storage.DiskUtil
@@ -109,7 +108,6 @@ class CoverCache(private val context: Context) {
     }
 
     private fun getCacheDir(dir: String): File {
-        Log.d("CacheDir", context.filesDir.toString())
         return context.getExternalFilesDir(dir)
             ?: File(context.filesDir, dir).also { it.mkdirs() }
     }

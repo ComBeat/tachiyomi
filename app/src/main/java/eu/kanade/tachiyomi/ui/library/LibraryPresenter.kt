@@ -1,7 +1,6 @@
 package eu.kanade.tachiyomi.ui.library
 
 import android.os.Bundle
-import android.util.Log
 import com.jakewharton.rxrelay.BehaviorRelay
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
@@ -347,17 +346,9 @@ class LibraryPresenter(
                     libraryItem.displayMode = category.displayMode
                 }
             }
-            Log.d("Presenter", categories.toString())
 
-            val dbCategoriess = db.getCategories().executeAsBlocking()
-            dbCategoriess.forEach {
-                Log.d("DbCategory", it.toString())
-            }
             this.categories = categories
-            Log.d("Presenter", "getLibraryObservable called")
-            Log.d("Presenter", libraryManga.toString())
-            val libraryMangaCount = getTotalLibraryCount(libraryManga) // TODO add method the counts the mangas
-
+            val libraryMangaCount = getTotalLibraryCount(libraryManga)
             Library(categories, libraryManga, libraryMangaCount)
         }
     }
@@ -380,8 +371,6 @@ class LibraryPresenter(
             }
         }
 
-        Log.d("Presenter", "getTotalLibraryCount called")
-
         return mangas.size
     }
 
@@ -391,7 +380,6 @@ class LibraryPresenter(
      * @return an observable of the categories.
      */
     private fun getCategoriesObservable(): Observable<List<Category>> {
-        Log.d("Presenter getCategoriesObservable", db.getLibraryMangas().toString())
         return db.getCategories().asRxObservable()
     }
 

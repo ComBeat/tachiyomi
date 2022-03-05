@@ -2,7 +2,6 @@ package eu.kanade.tachiyomi.ui.library
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -305,9 +304,7 @@ class LibraryController(
         // Restore active category.
         binding.libraryPager.setCurrentItem(activeCat, false)
 
-        // TODO maybe set lib count of adapter here
         adapter.itemsInLibary = libraryCount
-        Log.d("Controller", "onNextLibraryUpdate got called")
 
         // Trigger display of tabs
         onTabsSettingsChanged()
