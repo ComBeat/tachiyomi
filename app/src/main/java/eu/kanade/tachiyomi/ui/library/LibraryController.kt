@@ -304,6 +304,7 @@ class LibraryController(
         // Restore active category.
         binding.libraryPager.setCurrentItem(activeCat, false)
 
+        // Set the number of items in the library
         adapter.itemsInLibary = libraryCount
 
         // Trigger display of tabs
