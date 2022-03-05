@@ -95,7 +95,7 @@
     <string name="action_display_local_badge">Local manga</string>
     <string name="action_display_language_badge">Language</string>
     <string name="action_display_show_tabs">Show category tabs</string>
-    <string name="action_display_show_number_of_category_items">Show number of category items</string>
+    <string name="action_display_show_number_of_category_items">Show number of items per category</string>
     <string name="action_display_show_number_of_library_items">Show number of library items</string>
     <string name="action_disable">Disable</string>
     <string name="action_pin">Pin</string>

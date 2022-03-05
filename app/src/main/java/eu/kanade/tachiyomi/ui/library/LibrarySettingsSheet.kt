@@ -413,9 +413,14 @@ class LibrarySettingsSheet(
                 item.checked = !item.checked
                 when (item) {
                     showTabs -> preferences.categoryTabs().set(item.checked)
-                    showNumberOfCategoryItems -> preferences.categoryNumberOfItems().set(item.checked)
+                    showNumberOfCategoryItems -> {
+                        preferences.categoryNumberOfItems().set(item.checked)
+                        showNumberOfLibraryItems.enabled = item.checked
+                        adapter.notifyItemChanged(showNumberOfLibraryItems)
+                    }
                     showNumberOfLibraryItems -> preferences.libraryNumberOfItems().set(item.checked)
                 }
+
                 adapter.notifyItemChanged(item)
             }
         }
