@@ -578,7 +578,7 @@
     <string name="action_order_by_upload_date">Po datumu preuzimanja</string>
     <string name="action_filter_tracked">Praćeno</string>
     <string name="right_and_left_nav">Desno i lijevo</string>
-    <string name="action_display_show_number_of_category_items">Prikaži broj elemenata</string>
+    <string name="action_display_show_number_of_items">Prikaži broj elemenata</string>
     <string name="backup_restore_content_full">Podaci datoteke sigurnosne kopije će se obnoviti.
 \n
 \nZa upotrebu podataka, morat ćeš instalirati nedostajuća proširenja i nakon toga se prijaviti na usluge praćenja.</string>

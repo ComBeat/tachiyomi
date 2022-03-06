@@ -414,7 +414,7 @@
     <string name="action_unpin">ยกเลิกการปักหมุด</string>
     <string name="action_pin">ปักหมุด</string>
     <string name="action_disable">ปิดการใช้งาน</string>
-    <string name="action_display_show_number_of_category_items">แสดงจำนวน</string>
+    <string name="action_display_show_number_of_items">แสดงจำนวน</string>
     <string name="action_display_show_tabs">แสดงแท็บหมวดหมู่</string>
     <string name="action_display_unread_badge">ตอนที่ยังไม่ได้อ่าน</string>
     <string name="action_display_comfortable_grid">ตารางแบบเต็มที</string>

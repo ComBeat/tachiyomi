@@ -569,7 +569,7 @@
     <string name="pref_dual_page_invert_summary">Ик эллӗ уйарни вулав майлӑ мар пулсан</string>
     <string name="pref_dual_page_invert">Ик эллӗ уйарнине ҫавӑр</string>
     <string name="pref_dual_page_split">Ик эллӗ уйӑрни</string>
-    <string name="action_display_show_number_of_category_items">Япаласен шутне кӑтарт</string>
+    <string name="action_display_show_number_of_items">Япаласен шутне кӑтарт</string>
     <string name="nav_zone_right">Сылтӑм</string>
     <string name="nav_zone_left">Сулахай</string>
     <string name="nav_zone_next">Малалли</string>

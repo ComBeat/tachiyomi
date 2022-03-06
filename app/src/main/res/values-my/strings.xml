@@ -23,7 +23,7 @@
     <string name="action_unpin">ပင်ဖြုတ်သည်</string>
     <string name="action_pin">ပင်ချိတ်သည်</string>
     <string name="action_disable">ဖြုတ်သည်</string>
-    <string name="action_display_show_number_of_category_items">ပစ္စည်းအရေအတွက်ကိုပြသည်</string>
+    <string name="action_display_show_number_of_items">ပစ္စည်းအရေအတွက်ကိုပြသည်</string>
     <string name="action_display_show_tabs">အမျိုးအစားတန်းကိုပြသည်</string>
     <string name="action_display_unread_badge">မဖတ်ရသေးသောအမှတ်အသားများ</string>
     <string name="action_display_download_badge">ဒေါင်းလုဒ်အမှတ်အသားများ</string>

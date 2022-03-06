@@ -169,7 +169,7 @@
     <string name="action_cancel">Batalke</string>
     <string name="action_unpin">Copot pin</string>
     <string name="action_pin">Pin</string>
-    <string name="action_display_show_number_of_category_items">Tampilke jumlah item</string>
+    <string name="action_display_show_number_of_items">Tampilke jumlah item</string>
     <string name="action_display_show_tabs">Tampilke tab kategori</string>
     <string name="action_display_local_badge">Lencana lokal</string>
     <string name="action_display_unread_badge">Lencana durung diwaca</string>

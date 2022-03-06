@@ -356,7 +356,7 @@
     <string name="action_unpin">Tűzés visszavonása</string>
     <string name="action_pin">Kitűzés</string>
     <string name="action_disable">Kikapcsolás</string>
-    <string name="action_display_show_number_of_category_items">Tárgyak számának mutatása</string>
+    <string name="action_display_show_number_of_items">Tárgyak számának mutatása</string>
     <string name="action_display_show_tabs">Kategória fülek mutatása</string>
     <string name="action_display_unread_badge">Olvasatlan jelvények</string>
     <string name="action_display_comfortable_grid">Kényelmes rács</string>

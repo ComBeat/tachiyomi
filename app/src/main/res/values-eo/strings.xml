@@ -219,7 +219,7 @@
     <string name="action_restore">Restaŭro</string>
     <string name="action_show_errors">Montri erarojn</string>
     <string name="action_reset">Restartigi</string>
-    <string name="action_display_show_number_of_category_items">Montri nombro de elementoj</string>
+    <string name="action_display_show_number_of_items">Montri nombro de elementoj</string>
     <string name="action_display_show_tabs">Montri kategoriajn langetojn</string>
     <string name="action_display_unread_badge">Nelegitsignoj</string>
     <string name="action_display_download_badge">Elŝutsignoj</string>

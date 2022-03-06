@@ -405,7 +405,7 @@
     <string name="action_select_inverse">בחר הפוך</string>
     <string name="action_display_language_badge">שפה</string>
     <string name="action_display_show_tabs">הצג קטגורית כרטיסיות</string>
-    <string name="action_display_show_number_of_category_items">הצג מספר של פריטים</string>
+    <string name="action_display_show_number_of_items">הצג מספר של פריטים</string>
     <string name="action_disable">השבת</string>
     <string name="action_unpin">הסר נעיצה</string>
     <string name="cancel_all_for_series">בטל הכל לסדרה זו</string>

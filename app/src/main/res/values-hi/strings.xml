@@ -565,7 +565,7 @@
     <string name="action_asc">आरोही</string>
     <string name="action_order_by_chapter_number">अध्याय संख्या से</string>
     <string name="action_order_by_upload_date">अपलोड तिथि से</string>
-    <string name="action_display_show_number_of_category_items">वस्तुओं की संख्या दिखाएं</string>
+    <string name="action_display_show_number_of_items">वस्तुओं की संख्या दिखाएं</string>
     <string name="action_filter_tracked">ट्रैक किए गए</string>
     <string name="backup_restore_content_full">बैकअप फ़ाइल से डेटा बहाल किया जाएगा।
 \n

@@ -564,7 +564,7 @@
     <string name="action_asc">Oplopend</string>
     <string name="action_order_by_chapter_number">Op hoofdstuknummer</string>
     <string name="action_order_by_upload_date">Op uploaddatum</string>
-    <string name="action_display_show_number_of_category_items">Aantal items tonen</string>
+    <string name="action_display_show_number_of_items">Aantal items tonen</string>
     <string name="action_filter_tracked">Getracked</string>
     <string name="right_and_left_nav">Rechts en links</string>
     <string name="pref_dual_page_split">Dubbele pagina\'s opsplitsen</string>
