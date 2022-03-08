@@ -348,8 +348,7 @@ class LibraryPresenter(
             }
 
             this.categories = categories
-            val libraryMangaCount = getTotalLibraryCount(libraryManga)
-            Library(categories, libraryManga, libraryMangaCount)
+            Library(categories, libraryManga, getTotalLibraryCount(libraryManga))
         }
     }
 
