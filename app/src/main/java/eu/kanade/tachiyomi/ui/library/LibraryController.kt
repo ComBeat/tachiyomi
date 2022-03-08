@@ -148,7 +148,7 @@ class LibraryController(
             currentCategory?.name
         }
 
-        if (preferences.categoryNumberOfItems().get() && libraryMangaRelay.hasValue()) {
+        if (libraryMangaRelay.hasValue()) {
             libraryMangaRelay.value.mangas.let { mangaMap ->
                 title += if (title == resources?.getString(R.string.label_library)) {
                     if (preferences.libraryNumberOfItems().get()) {
@@ -156,8 +156,10 @@ class LibraryController(
                     } else {
                         ""
                     }
-                } else {
+                } else if (preferences.categoryNumberOfItems().get()) {
                     " (${mangaMap[currentCategory?.id]?.size ?: 0})"
+                } else {
+                    ""
                 }
             }
         }
