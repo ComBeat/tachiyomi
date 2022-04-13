@@ -150,7 +150,7 @@
     <string name="ext_trust">Luota</string>
     <string name="ext_untrusted">Luottamaton</string>
     <string name="ext_uninstall">Poista asennus</string>
-    <string name="untrusted_extension">Luottamattomat laajennukset</string>
+    <string name="untrusted_extension">Luottamattomat laajennokset</string>
     <string name="untrusted_extension_message">Tämä laajennus on allekirjoitettu luottamattomalla sertifikaatilla ja sitä ei ole aktivoitu.
 \n
 \nHaitallinen laajennus voisi lukea mahdolliset kirjautumistiedot Tachiyomista tai suorittaa luvatonta koodia.
@@ -171,7 +171,6 @@
     <string name="pref_reader_navigation">Navigointi</string>
     <string name="pref_read_with_volume_keys">Äänenvoimakkuus näppäimet</string>
     <string name="pref_read_with_volume_keys_inverted">Käännä äänenvoimakkuus näppäimet</string>
-    <string name="pref_read_with_tapping">Näpäyttäminen</string>
     <string name="pref_read_with_long_tap">Näytä pitkällä napautuksella</string>
     <string name="pref_reader_theme">Taustan väri</string>
     <string name="white_background">Valkoinen</string>
@@ -457,10 +456,6 @@
     <string name="battery_optimization_setting_activity_not_found">Laiteasetuksia ei voitu avata</string>
     <string name="tracking_info">Yksisuuntainen synkronointi lukujen seurantapalveluiden päivittämiseksi. Määritä yksittäisten mangamerkintöjen seuranta seurantapainikkeesta.</string>
     <string name="pref_refresh_library_covers">Päivitä kirjaston manga-kannet</string>
-    <plurals name="notification_update_error">
-        <item quantity="one">1 päivitys epäonnistui</item>
-        <item quantity="other">%1$d päivitystä epäonnistui</item>
-    </plurals>
     <string name="unofficial_extension_message">Tämä laajennus ei ole virallisesta Tachiyomi-laajennusluettelosta.</string>
     <string name="ext_unofficial">Epävirallinen</string>
     <string name="sort_by_upload_date">Latauspäivämäärän mukaan</string>
@@ -609,4 +604,6 @@
     <string name="date">Päivämäärä</string>
     <string name="off">Pois päältä</string>
     <string name="on">Päällä</string>
+    <string name="getting_started_guide">Aloitusopas</string>
+    <string name="download_queue_size_warning">Varoitus: massalataukset voivat johtaa siihen, että lähteet muuttuvat hitaammiksi käyttää ja/tai ne estävät Tachiyomin käytön</string>
 </resources>
