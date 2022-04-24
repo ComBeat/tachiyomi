@@ -24,6 +24,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.disk.DiskCache
 import coil.util.DebugLogger
+import eu.kanade.domain.DomainModule
 import eu.kanade.tachiyomi.data.coil.MangaCoverFetcher
 import eu.kanade.tachiyomi.data.coil.MangaCoverKeyer
 import eu.kanade.tachiyomi.data.coil.TachiyomiImageDecoder
@@ -36,6 +37,7 @@ import eu.kanade.tachiyomi.util.preference.asImmediateFlow
 import eu.kanade.tachiyomi.util.system.AuthenticatorUtil
 import eu.kanade.tachiyomi.util.system.WebViewUtil
 import eu.kanade.tachiyomi.util.system.animatorDurationScale
+import eu.kanade.tachiyomi.util.system.isDevFlavor
 import eu.kanade.tachiyomi.util.system.logcat
 import eu.kanade.tachiyomi.util.system.notification
 import kotlinx.coroutines.flow.launchIn
@@ -74,6 +76,7 @@ open class App : Application(), DefaultLifecycleObserver, ImageLoaderFactory {
         }
 
         Injekt.importModule(AppModule(this))
+        Injekt.importModule(DomainModule())
 
         setupAcra()
         setupNotificationChannels()
@@ -174,7 +177,7 @@ open class App : Application(), DefaultLifecycleObserver, ImageLoaderFactory {
     }
 
     protected open fun setupAcra() {
-        if (BuildConfig.FLAVOR != "dev") {
+        if (isDevFlavor.not()) {
             initAcra {
                 buildConfigClass = BuildConfig::class.java
                 excludeMatchingSharedPreferencesKeys = listOf(".*username.*", ".*password.*", ".*token.*")

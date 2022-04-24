@@ -35,6 +35,7 @@ import com.google.android.material.snackbar.Snackbar
 import dev.chrisbanes.insetter.applyInsetter
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.SelectableAdapter
+import eu.kanade.domain.history.model.HistoryWithRelations
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
@@ -59,7 +60,7 @@ import eu.kanade.tachiyomi.ui.base.controller.DialogController
 import eu.kanade.tachiyomi.ui.base.controller.FabController
 import eu.kanade.tachiyomi.ui.base.controller.NucleusController
 import eu.kanade.tachiyomi.ui.base.controller.getMainAppBarHeight
-import eu.kanade.tachiyomi.ui.base.controller.withFadeTransaction
+import eu.kanade.tachiyomi.ui.base.controller.pushController
 import eu.kanade.tachiyomi.ui.browse.migration.search.SearchController
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceController
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchController
@@ -117,6 +118,8 @@ class MangaController :
     ChangeMangaCategoriesDialog.Listener,
     DownloadCustomChaptersDialog.Listener,
     DeleteChaptersDialog.Listener {
+
+    constructor(history: HistoryWithRelations) : this(history.mangaId)
 
     constructor(manga: Manga?, fromSource: Boolean = false) : super(
         bundleOf(
@@ -550,7 +553,7 @@ class MangaController :
                 }
                 setNegativeButton(activity?.getString(R.string.action_cancel)) { _, _ -> }
                 setNeutralButton(activity?.getString(R.string.action_show_manga)) { _, _ ->
-                    router.pushController(MangaController(libraryManga).withFadeTransaction())
+                    router.pushController(MangaController(libraryManga))
                 }
                 setCancelable(true)
             }.create().show()
@@ -684,7 +687,7 @@ class MangaController :
      * @param query the search query to pass to the search controller
      */
     fun performGlobalSearch(query: String) {
-        router.pushController(GlobalSearchController(query).withFadeTransaction())
+        router.pushController(GlobalSearchController(query))
     }
 
     /**
@@ -883,7 +886,7 @@ class MangaController :
     private fun migrateManga() {
         val controller = SearchController(presenter.manga)
         controller.targetController = this
-        router.pushController(controller.withFadeTransaction())
+        router.pushController(controller)
     }
 
     // Manga info - end
@@ -901,7 +904,7 @@ class MangaController :
         chaptersHeader.setNumChapters(chapters.size)
 
         val adapter = chaptersAdapter ?: return
-        adapter.updateDataSet(presenter.cleanChapterNames(chapters))
+        adapter.updateDataSet(chapters)
 
         if (selectedChapters.isNotEmpty()) {
             adapter.clearSelection() // we need to start from a clean state, index may have changed

@@ -18,6 +18,7 @@ import eu.kanade.tachiyomi.ui.library.setting.SortModeSetting
 import eu.kanade.tachiyomi.ui.reader.setting.OrientationType
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingModeType
 import eu.kanade.tachiyomi.util.system.DeviceUtil
+import eu.kanade.tachiyomi.util.system.isDevFlavor
 import eu.kanade.tachiyomi.widget.ExtendedNavigationView
 import java.io.File
 import java.text.DateFormat
@@ -203,11 +204,11 @@ class PreferencesHelper(val context: Context) {
 
     fun downloadOnlyOverWifi() = prefs.getBoolean(Keys.downloadOnlyOverWifi, true)
 
-    fun saveChaptersAsCBZ() = flowPrefs.getBoolean("save_chapter_as_cbz", false)
+    fun saveChaptersAsCBZ() = flowPrefs.getBoolean("save_chapter_as_cbz", true)
 
     fun folderPerManga() = prefs.getBoolean(Keys.folderPerManga, false)
 
-    fun numberOfBackups() = flowPrefs.getInt("backup_slots", 1)
+    fun numberOfBackups() = flowPrefs.getInt("backup_slots", 2)
 
     fun backupInterval() = flowPrefs.getInt("backup_interval", 0)
 
@@ -279,10 +280,10 @@ class PreferencesHelper(val context: Context) {
 
     fun pinnedSources() = flowPrefs.getStringSet("pinned_catalogues", emptySet())
 
-    fun downloadNew() = flowPrefs.getBoolean("download_new", false)
+    fun downloadNewChapter() = flowPrefs.getBoolean("download_new", false)
 
-    fun downloadNewCategories() = flowPrefs.getStringSet("download_new_categories", emptySet())
-    fun downloadNewCategoriesExclude() = flowPrefs.getStringSet("download_new_categories_exclude", emptySet())
+    fun downloadNewChapterCategories() = flowPrefs.getStringSet("download_new_categories", emptySet())
+    fun downloadNewChapterCategoriesExclude() = flowPrefs.getStringSet("download_new_categories_exclude", emptySet())
 
     fun defaultCategory() = prefs.getInt(Keys.defaultCategory, -1)
 
@@ -321,9 +322,11 @@ class PreferencesHelper(val context: Context) {
         if (DeviceUtil.isMiui) Values.ExtensionInstaller.LEGACY else Values.ExtensionInstaller.PACKAGEINSTALLER,
     )
 
-    fun verboseLogging() = prefs.getBoolean(Keys.verboseLogging, false)
+    fun verboseLogging() = prefs.getBoolean(Keys.verboseLogging, isDevFlavor)
 
     fun autoClearChapterCache() = prefs.getBoolean(Keys.autoClearChapterCache, false)
+
+    fun duplicatePinnedSources() = flowPrefs.getBoolean("duplicate_pinned_sources", false)
 
     fun setChapterSettingsDefault(manga: Manga) {
         prefs.edit {

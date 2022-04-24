@@ -6,6 +6,7 @@ plugins {
     kotlin("android")
     kotlin("plugin.serialization")
     id("com.github.zellius.shortcut-helper")
+    id("com.squareup.sqldelight")
 }
 
 if (gradle.startParameter.taskRequests.toString().contains("Standard")) {
@@ -24,8 +25,8 @@ android {
         applicationId = "eu.kanade.tachiyomi"
         minSdk = AndroidConfig.minSdk
         targetSdk = AndroidConfig.targetSdk
-        versionCode = 79
-        versionName = "0.13.3"
+        versionCode = 80
+        versionName = "0.13.4"
 
         buildConfigField("String", "COMMIT_COUNT", "\"${getCommitCount()}\"")
         buildConfigField("String", "COMMIT_SHA", "\"${getGitSha()}\"")
@@ -109,6 +110,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        compose = true
 
         // Disable some unused things
         aidl = false
@@ -122,6 +124,10 @@ android {
         checkReleaseBuilds = false
     }
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = compose.versions.compose.get()
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -133,8 +139,24 @@ android {
 }
 
 dependencies {
-    implementation(kotlinx.reflect)
+    // Compose
+    implementation(compose.activity)
+    implementation(compose.foundation)
+    implementation(compose.material3.core)
+    implementation(compose.material3.adapter)
+    implementation(compose.material.icons)
+    implementation(compose.animation)
+    implementation(compose.ui.tooling)
+    implementation(compose.accompanist.webview)
 
+    implementation(androidx.paging.runtime)
+    implementation(androidx.paging.compose)
+
+    implementation(libs.sqldelight.android.driver)
+    implementation(libs.sqldelight.coroutines)
+    implementation(libs.sqldelight.android.paging)
+
+    implementation(kotlinx.reflect)
     implementation(kotlinx.bundles.coroutines)
 
     // Source models and interfaces from Tachiyomi 1.x
@@ -219,6 +241,8 @@ dependencies {
         exclude(group = "androidx.viewpager", module = "viewpager")
     }
     implementation(libs.insetter)
+    implementation(libs.markwon)
+    implementation(libs.aboutLibraries.compose)
 
     // Conductor
     implementation(libs.bundles.conductor)
@@ -233,24 +257,25 @@ dependencies {
     implementation(libs.acra.http)
     "standardImplementation"(libs.firebase.analytics)
 
-    // Licenses
-    implementation(libs.aboutlibraries.core)
-
     // Shizuku
     implementation(libs.bundles.shizuku)
 
     // Tests
     testImplementation(libs.junit)
-    testImplementation(libs.assertj.core)
-    testImplementation(libs.mockito.core)
-
-    testImplementation(libs.bundles.robolectric)
 
     // For detecting memory leaks; see https://square.github.io/leakcanary/
     // debugImplementation(libs.leakcanary.android)
+    implementation(libs.leakcanary.plumber)
 }
 
 tasks {
+    withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
     // See https://kotlinlang.org/docs/reference/experimental.html#experimental-status-of-experimental-api(-markers)
     withType<KotlinCompile> {
         kotlinOptions.freeCompilerArgs += listOf(
@@ -262,6 +287,9 @@ tasks {
             "-Xopt-in=kotlinx.coroutines.InternalCoroutinesApi",
             "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
             "-Xopt-in=coil.annotation.ExperimentalCoilApi",
+            "-Xopt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
+            "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi"
         )
     }
 
