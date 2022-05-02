@@ -1,8 +1,11 @@
-package eu.kanade.presentation.more
+package eu.kanade.presentation.more.about
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Public
@@ -17,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import eu.kanade.presentation.components.LinkIcon
 import eu.kanade.presentation.components.PreferenceRow
+import eu.kanade.presentation.more.LogoHeader
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.updater.RELEASE_URL
@@ -35,6 +39,7 @@ fun AboutScreen(
 
     LazyColumn(
         modifier = Modifier.nestedScroll(nestedScrollInterop),
+        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
     ) {
         item {
             LogoHeader()

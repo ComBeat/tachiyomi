@@ -2,14 +2,31 @@ package eu.kanade.presentation.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -19,18 +36,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import eu.kanade.domain.history.model.HistoryWithRelations
 import eu.kanade.presentation.components.EmptyScreen
+import eu.kanade.presentation.components.LoadingScreen
 import eu.kanade.presentation.components.MangaCover
-import eu.kanade.presentation.components.MangaCoverAspect
 import eu.kanade.presentation.util.horizontalPadding
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.ui.recent.history.HistoryPresenter
-import eu.kanade.tachiyomi.ui.recent.history.UiModel
+import eu.kanade.tachiyomi.ui.recent.history.HistoryState
 import eu.kanade.tachiyomi.util.lang.toRelativeString
 import eu.kanade.tachiyomi.util.lang.toTimestampString
 import uy.kohesive.injekt.Injekt
@@ -38,7 +56,7 @@ import uy.kohesive.injekt.api.get
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.*
+import java.util.Date
 
 @Composable
 fun HistoryScreen(
@@ -49,37 +67,37 @@ fun HistoryScreen(
     onClickDelete: (HistoryWithRelations, Boolean) -> Unit,
 ) {
     val state by presenter.state.collectAsState()
-    val history = state.list?.collectAsLazyPagingItems()
-    when {
-        history == null -> {
-            CircularProgressIndicator()
-        }
-        history.itemCount == 0 -> {
-            EmptyScreen(
-                textResource = R.string.information_no_recent_manga
-            )
-        }
-        else -> {
+    when (state) {
+        is HistoryState.Loading -> LoadingScreen()
+        is HistoryState.Error -> Text(text = (state as HistoryState.Error).error.message!!)
+        is HistoryState.Success ->
             HistoryContent(
                 nestedScroll = nestedScrollInterop,
-                history = history,
+                history = (state as HistoryState.Success).uiModels.collectAsLazyPagingItems(),
                 onClickCover = onClickCover,
                 onClickResume = onClickResume,
                 onClickDelete = onClickDelete,
             )
-        }
     }
 }
 
 @Composable
 fun HistoryContent(
-    history: LazyPagingItems<UiModel>,
+    history: LazyPagingItems<HistoryUiModel>,
     onClickCover: (HistoryWithRelations) -> Unit,
     onClickResume: (HistoryWithRelations) -> Unit,
     onClickDelete: (HistoryWithRelations, Boolean) -> Unit,
     preferences: PreferencesHelper = Injekt.get(),
     nestedScroll: NestedScrollConnection
 ) {
+    if (history.loadState.refresh is LoadState.Loading) {
+        LoadingScreen()
+        return
+    } else if (history.loadState.refresh is LoadState.NotLoading && history.itemCount == 0) {
+        EmptyScreen(textResource = R.string.information_no_recent_manga)
+        return
+    }
+
     val relativeTime: Int = remember { preferences.relativeTime().get() }
     val dateFormat: DateFormat = remember { preferences.dateFormat() }
 
@@ -89,11 +107,12 @@ fun HistoryContent(
     LazyColumn(
         modifier = Modifier
             .nestedScroll(nestedScroll),
+        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
         state = scrollState,
     ) {
         items(history) { item ->
             when (item) {
-                is UiModel.Header -> {
+                is HistoryUiModel.Header -> {
                     HistoryHeader(
                         modifier = Modifier
                             .animateItemPlacement(),
@@ -102,7 +121,7 @@ fun HistoryContent(
                         dateFormat = dateFormat
                     )
                 }
-                is UiModel.Item -> {
+                is HistoryUiModel.Item -> {
                     val value = item.item
                     HistoryItem(
                         modifier = Modifier.animateItemPlacement(),
@@ -114,9 +133,6 @@ fun HistoryContent(
                 }
                 null -> {}
             }
-        }
-        item {
-            Spacer(Modifier.navigationBarsPadding())
         }
     }
 
@@ -168,12 +184,11 @@ fun HistoryItem(
             .padding(horizontal = horizontalPadding, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        MangaCover(
+        MangaCover.Book(
             modifier = Modifier
                 .fillMaxHeight()
                 .clickable(onClick = onClickCover),
             data = history.thumbnailUrl,
-            aspect = MangaCoverAspect.COVER
         )
         Column(
             modifier = Modifier
@@ -268,3 +283,8 @@ private val chapterFormatter = DecimalFormat(
     "#.###",
     DecimalFormatSymbols().apply { decimalSeparator = '.' },
 )
+
+sealed class HistoryUiModel {
+    data class Header(val date: Date) : HistoryUiModel()
+    data class Item(val item: HistoryWithRelations) : HistoryUiModel()
+}
