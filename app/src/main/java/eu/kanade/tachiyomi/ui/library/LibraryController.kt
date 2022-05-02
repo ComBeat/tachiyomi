@@ -7,6 +7,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+// import android.preference.Preference
+import android.util.Log
 import androidx.appcompat.view.ActionMode
 import androidx.core.view.doOnAttach
 import androidx.core.view.isVisible
@@ -142,8 +144,9 @@ class LibraryController(
 
     private fun updateTitle() {
         val currentCategory = adapter?.categories?.getOrNull(binding.libraryPager.currentItem)
+        val categoryTabsBool = preferences.categoryTabs().get()
 
-        var title = if (preferences.categoryTabs().get()) {
+        var title = if (categoryTabsBool) {
             resources?.getString(R.string.label_library)
         } else {
             currentCategory?.name
@@ -151,7 +154,7 @@ class LibraryController(
 
         if (libraryMangaRelay.hasValue()) {
             libraryMangaRelay.value.mangas.let { mangaMap ->
-                title += if (title == resources?.getString(R.string.label_library)) {
+                title += if (categoryTabsBool) {
                     if (preferences.libraryNumberOfItems().get()) {
                         " (${adapter?.itemsInLibary ?: 0})"
                     } else {
