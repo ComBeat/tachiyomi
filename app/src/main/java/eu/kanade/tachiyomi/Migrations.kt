@@ -1,6 +1,7 @@
 package eu.kanade.tachiyomi
 
 import android.os.Build
+import android.util.Log
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import eu.kanade.tachiyomi.data.backup.BackupCreatorJob
@@ -38,6 +39,7 @@ object Migrations {
         val context = preferences.context
 
         val oldVersion = preferences.lastVersionCode().get()
+        Log.d("Migrations", oldVersion.toString())
         if (oldVersion < BuildConfig.VERSION_CODE) {
             preferences.lastVersionCode().set(BuildConfig.VERSION_CODE)
 
@@ -265,6 +267,19 @@ object Migrations {
                     preferences.navigationModePager().set(5)
                     preferences.navigationModeWebtoon().set(5)
                 }
+                if (prefs.getBoolean("display_number_of_category_items", false)) {
+                    preferences.categoryNumberOfItems().set(false)
+                }
+                if (prefs.getBoolean("display_number_of_library_items", false)) {
+                    preferences.libraryNumberOfItems().set(false)
+                }
+                /*if (preferences.categoryTabs().get()) {
+                }
+                if (preferences.categoryNumberOfItems().get()) {
+                    if (preferences.libraryNumberOfItems().get()) {
+                        // preferences.
+                    }
+                }*/
             }
 
             return true

@@ -7,8 +7,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-// import android.preference.Preference
-import android.util.Log
 import androidx.appcompat.view.ActionMode
 import androidx.core.view.doOnAttach
 import androidx.core.view.isVisible
