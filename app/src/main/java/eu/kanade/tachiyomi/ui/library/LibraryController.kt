@@ -141,10 +141,10 @@ class LibraryController(
     }
 
     private fun updateTitle() {
+        val showCategoryTabs = preferences.categoryTabs().get()
         val currentCategory = adapter?.categories?.getOrNull(binding.libraryPager.currentItem)
-        val categoryTabsBool = preferences.categoryTabs().get()
 
-        var title = if (categoryTabsBool) {
+        var title = if (showCategoryTabs) {
             resources?.getString(R.string.label_library)
         } else {
             currentCategory?.name
@@ -152,7 +152,7 @@ class LibraryController(
 
         if (libraryMangaRelay.hasValue()) {
             libraryMangaRelay.value.mangas.let { mangaMap ->
-                title += if (categoryTabsBool) {
+                title += if (showCategoryTabs) {
                     if (preferences.libraryNumberOfItems().get()) {
                         " (${adapter?.itemsInLibary ?: 0})"
                     } else {
