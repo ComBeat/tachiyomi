@@ -25,7 +25,7 @@ android {
         applicationId = "eu.kanade.tachiyomi"
         minSdk = AndroidConfig.minSdk
         targetSdk = AndroidConfig.targetSdk
-        versionCode = 80
+        versionCode = 81
         versionName = "0.13.4"
 
         buildConfigField("String", "COMMIT_COUNT", "\"${getCommitCount()}\"")
@@ -148,11 +148,12 @@ dependencies {
     implementation(compose.animation)
     implementation(compose.ui.tooling)
     implementation(compose.accompanist.webview)
+    implementation(compose.accompanist.swiperefresh)
 
     implementation(androidx.paging.runtime)
     implementation(androidx.paging.compose)
 
-    implementation(libs.sqldelight.sqlite)
+    implementation(androidx.sqlite)
     implementation(libs.sqldelight.android.driver)
     implementation(libs.sqldelight.coroutines)
     implementation(libs.sqldelight.android.paging)

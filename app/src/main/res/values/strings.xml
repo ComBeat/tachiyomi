@@ -270,10 +270,11 @@
     <string name="obsolete_extension_message">This extension is no longer available.</string>
     <string name="unofficial_extension_message">This extension is not from the official Tachiyomi extensions list.</string>
     <string name="extension_api_error">Failed to get extensions list</string>
-    <string name="ext_version_info">Version: %1$s</string>
-    <string name="ext_language_info">Language: %1$s</string>
+    <string name="ext_info_version">Version</string>
+    <string name="ext_info_language">Language</string>
+    <string name="ext_info_age_rating">Age rating</string>
     <string name="ext_nsfw_short">18+</string>
-    <string name="ext_nsfw_warning">May contain NSFW (18+) content</string>
+    <string name="ext_nsfw_warning">Sources from this extension may contain NSFW (18+) content</string>
     <string name="ext_install_service_notif">Installing extension…</string>
     <string name="ext_installer_pref">Installer</string>
     <string name="ext_installer_legacy">Legacy</string>
@@ -284,8 +285,8 @@
 
       <!-- Reader section -->
     <string name="pref_fullscreen">Fullscreen</string>
-    <string name="pref_show_navigation_mode">Show navigation layout overlay</string>
-    <string name="pref_show_navigation_mode_summary">Show tap zones when reader is opened</string>
+    <string name="pref_show_navigation_mode">Show tap zones overlay</string>
+    <string name="pref_show_navigation_mode_summary">Briefly show when reader is opened</string>
     <string name="pref_dual_page_split">Dual page split</string>
     <string name="pref_dual_page_invert">Invert dual page split placement</string>
     <string name="pref_dual_page_invert_summary">If the placement of the dual page split doesn\'t match reading direction</string>
@@ -296,7 +297,7 @@
     <string name="pref_show_reading_mode">Show reading mode</string>
     <string name="pref_show_reading_mode_summary">Briefly show current mode when reader is opened</string>
     <string name="pref_true_color">32-bit color</string>
-    <string name="pref_true_color_summary">Reduces banding, but impacts performance</string>
+    <string name="pref_true_color_summary">Reduces banding, but may impact performance</string>
     <string name="pref_crop_borders">Crop borders</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -316,7 +317,7 @@
     <string name="pref_reader_navigation">Navigation</string>
     <string name="pref_read_with_volume_keys">Volume keys</string>
     <string name="pref_read_with_volume_keys_inverted">Invert volume keys</string>
-    <string name="pref_read_with_tapping_inverted">Invert tapping</string>
+    <string name="pref_read_with_tapping_inverted">Invert tap zones</string>
     <string name="tapping_inverted_none">None</string>
     <string name="tapping_inverted_horizontal">Horizontal</string>
     <string name="tapping_inverted_vertical">Vertical</string>
@@ -346,7 +347,7 @@
     <string name="webtoon_viewer">Webtoon</string>
     <string name="vertical_plus_viewer">Continuous vertical</string>
     <string name="pager_viewer">Paged</string>
-    <string name="pref_viewer_nav">Navigation layout</string>
+    <string name="pref_viewer_nav">Tap zones</string>
     <string name="pref_image_scale_type">Scale type</string>
     <string name="scale_type_fit_screen">Fit screen</string>
     <string name="scale_type_stretch">Stretch</string>
@@ -408,6 +409,8 @@
     <string name="pref_download_new">Download new chapters</string>
     <string name="pref_download_new_categories_details">Manga in excluded categories will not be downloaded even if they are also in included categories.</string>
     <string name="save_chapter_as_cbz">Save as CBZ archive</string>
+    <string name="split_tall_images">Auto split tall images</string>
+    <string name="split_tall_images_summary">Improves reader performance by splitting tall downloaded images.</string>
 
       <!-- Tracking section -->
     <string name="tracking_guide">Tracking guide</string>
@@ -482,9 +485,13 @@
     <string name="database_clean">Database clean</string>
     <string name="pref_clear_webview_data">Clear WebView data</string>
     <string name="webview_data_deleted">WebView data cleared</string>
-    <string name="pref_refresh_library_covers">Refresh library manga covers</string>
+    <string name="pref_refresh_library_covers">Refresh library covers</string>
     <string name="pref_refresh_library_tracking">Refresh tracking</string>
     <string name="pref_refresh_library_tracking_summary">Updates status, score and last chapter read from the tracking services</string>
+    <string name="pref_reset_viewer_flags">Reset per-series reader settings</string>
+    <string name="pref_reset_viewer_flags_summary">Resets reading mode and orientation of all series</string>
+    <string name="pref_reset_viewer_flags_success">All reader settings reset</string>
+    <string name="pref_reset_viewer_flags_error">Couldn\'t reset reader settings</string>
     <string name="pref_dump_crash_logs">Dump crash logs</string>
     <string name="pref_dump_crash_logs_summary">Saves error logs to a file for sharing with the developers</string>
     <string name="crash_log_saved">Crash logs saved</string>
@@ -725,7 +732,7 @@
     <string name="migration_selection_prompt">Select a source to migrate from</string>
     <string name="migrate">Migrate</string>
     <string name="copy">Copy</string>
-    <string name="migrate_empty_screen">Well, this is awkward</string>
+    <string name="empty_screen">Well, this is awkward</string>
 
     <!-- Downloads activity and service -->
     <string name="download_queue_error">Couldn\'t download chapters. You can try again in the downloads section</string>
@@ -776,7 +783,7 @@
 
     <!--UpdateCheck Notifications-->
     <string name="update_check_notification_download_in_progress">Downloading…</string>
-    <string name="update_check_notification_download_complete">Download complete</string>
+    <string name="update_check_notification_download_complete">Tap to install</string>
     <string name="update_check_notification_download_error">Download error</string>
     <string name="update_check_notification_update_available">New version available!</string>
     <string name="update_check_fdroid_migration_info">A new version is available from the official releases. Tap to learn how to migrate from unofficial F-Droid releases.</string>
@@ -813,6 +820,9 @@
     <string name="download_notifier_no_network">No network connection available</string>
     <string name="download_notifier_download_paused">Download paused</string>
     <string name="download_notifier_download_finish">Download completed</string>
+    <string name="download_notifier_split_page_not_found">Page %d not found while splitting</string>
+    <string name="download_notifier_split_page_path_not_found">Couldn\'t find file path of page %d</string>
+    <string name="download_notifier_split_failed">Couldn\'t split downloaded image</string>
 
     <!-- Notification channels -->
     <string name="channel_common">Common</string>

@@ -426,6 +426,7 @@ class LibrarySettingsSheet(
                     }
                     showNumberOfLibraryItems -> preferences.libraryNumberOfItems().set(item.checked)
                     showNumberOfCategoryItems -> preferences.categoryNumberOfItems().set(item.checked)
+                    else -> {}
                 }
                 adapter.notifyItemChanged(item)
             }

@@ -106,7 +106,7 @@ class LibraryPresenter(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeLatestCache({ view, (categories, mangaMap, libraryCount) ->
                     view.onNextLibraryUpdate(categories, mangaMap, libraryCount)
-                })
+                },)
         }
     }
 
@@ -318,6 +318,7 @@ class LibraryPresenter(
                 SortModeSetting.DATE_ADDED -> {
                     i1.manga.date_added.compareTo(i2.manga.date_added)
                 }
+                else -> throw IllegalStateException("Invalid SortModeSetting: $sortingMode")
             }
         }
 
