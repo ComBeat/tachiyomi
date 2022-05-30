@@ -37,12 +37,6 @@ class LibraryAdapter(
     private var itemsPerCategory: List<Int> = emptyList()
 
     var itemsInLibary: Int = 0
-        set(value) {
-            if (field != value) {
-                field = value
-                notifyDataSetChanged()
-            }
-        }
 
     private var boundViews = arrayListOf<View>()
 
