@@ -25,7 +25,6 @@
     <string name="action_sort_alpha">ବର୍ଣ୍ଣମାଳା ଅନୁଯାୟୀ</string>
     <string name="action_newest">ସବୁଠୁ ନୂଆ</string>
     <string name="action_asc">ଆରୋହଣ</string>
-    <string name="ext_language_info">ଭାଷା: %1$s</string>
     <string name="action_oldest">ସବୁଠୁ ପୁରୁଣା</string>
     <string name="add_to_library">ଲାଇବ୍ରେରୀରେ ଯୋଡ଼ନ୍ତୁ</string>
     <string name="action_desc">ଅବରୋହଣ</string>
@@ -75,7 +74,6 @@
     <string name="landscape">ଲ୍ୟାଣ୍ଡସ୍କେପ୍</string>
     <string name="update_48hour">ପ୍ରତି ୨ ଦିନରେ</string>
     <string name="ext_app_info">ଆପ୍ ସୂଚନା</string>
-    <string name="ext_version_info">ସଂସ୍କରଣ: %1$s</string>
     <string name="pref_keep_screen_on">ସ୍କ୍ରିନ୍ ସଚଳ ରଖନ୍ତୁ</string>
     <string name="update_6hour">ପ୍ରତି ୬ ଘଣ୍ଟାରେ</string>
     <string name="update_12hour">ପ୍ରତି ୧୨ ଘଣ୍ଟାରେ</string>
@@ -111,7 +109,6 @@
     <string name="information_webview_required">Tachiyomi ପାଇଁ WebView ଆବଶ୍ୟକ ଅଟେ</string>
     <string name="information_empty_library">ଆପଣଙ୍କ ଲାଇବ୍ରେରୀ ଖାଲି ଅଛି</string>
     <string name="update_check_notification_download_in_progress">ଡାଉନଲୋଡ୍ ହେଉଛି…</string>
-    <string name="description_cover">ମାଙ୍ଗାର ମଲାଟ</string>
     <string name="update_check_notification_update_available">ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ!</string>
     <string name="file_select_cover">ମଲାଟର ପ୍ରତିଛବି ଚୟନ କରନ୍ତୁ</string>
     <string name="track_started_reading_date">ଆରମ୍ଭ ତାରିଖ</string>

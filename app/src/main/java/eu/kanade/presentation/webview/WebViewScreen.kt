@@ -11,15 +11,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.zIndex
 import com.google.accompanist.web.AccompanistWebViewClient
 import com.google.accompanist.web.LoadingState
 import com.google.accompanist.web.WebView
@@ -27,7 +25,6 @@ import com.google.accompanist.web.rememberWebViewNavigator
 import com.google.accompanist.web.rememberWebViewState
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.AppBarActions
-import eu.kanade.presentation.components.AppBarTitle
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.util.system.setDefaultSettings
@@ -43,25 +40,15 @@ fun WebViewScreen(
     onClearCookies: (String) -> Unit,
 ) {
     val context = LocalContext.current
-    val state = rememberWebViewState(url = url)
+    val state = rememberWebViewState(url = url, additionalHttpHeaders = headers)
     val navigator = rememberWebViewNavigator()
 
     Column {
-        SmallTopAppBar(
-            title = {
-                AppBarTitle(
-                    title = state.pageTitle ?: initialTitle,
-                    subtitle = state.content.getCurrentUrl(),
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = onUp) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.action_close),
-                    )
-                }
-            },
+        AppBar(
+            title = state.pageTitle ?: initialTitle,
+            subtitle = state.content.getCurrentUrl(),
+            navigateUp = onUp,
+            navigationIcon = Icons.Default.Close,
             actions = {
                 AppBarActions(
                     listOf(
@@ -106,12 +93,14 @@ fun WebViewScreen(
             },
         )
 
-        Box(modifier = Modifier.weight(1f)) {
+        Box {
             val loadingState = state.loadingState
             if (loadingState is LoadingState.Loading) {
                 LinearProgressIndicator(
                     progress = loadingState.progress,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .zIndex(1f),
                 )
             }
 
@@ -141,7 +130,7 @@ fun WebViewScreen(
                         WebView.setWebContentsDebuggingEnabled(true)
                     }
 
-                    headers["User-Agent"]?.let {
+                    headers["user-agent"]?.let {
                         webView.settings.userAgentString = it
                     }
                 },

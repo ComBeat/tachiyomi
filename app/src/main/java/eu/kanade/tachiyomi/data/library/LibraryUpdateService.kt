@@ -6,13 +6,29 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.content.ContextCompat
+import eu.kanade.data.chapter.NoChaptersException
+import eu.kanade.domain.category.interactor.GetCategories
+import eu.kanade.domain.category.model.Category
+import eu.kanade.domain.chapter.interactor.GetChapterByMangaId
+import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
+import eu.kanade.domain.chapter.interactor.SyncChaptersWithTrackServiceTwoWay
+import eu.kanade.domain.chapter.model.toDbChapter
+import eu.kanade.domain.manga.interactor.GetLibraryManga
+import eu.kanade.domain.manga.interactor.GetManga
+import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.manga.model.toMangaInfo
+import eu.kanade.domain.manga.model.toMangaUpdate
+import eu.kanade.domain.track.interactor.GetTracks
+import eu.kanade.domain.track.interactor.InsertTrack
+import eu.kanade.domain.track.model.toDbTrack
+import eu.kanade.domain.track.model.toDomainTrack
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.data.database.DatabaseHelper
-import eu.kanade.tachiyomi.data.database.models.Category
 import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.LibraryManga
 import eu.kanade.tachiyomi.data.database.models.Manga
+import eu.kanade.tachiyomi.data.database.models.toDomainChapter
+import eu.kanade.tachiyomi.data.database.models.toDomainManga
 import eu.kanade.tachiyomi.data.database.models.toMangaInfo
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadService
@@ -28,12 +44,8 @@ import eu.kanade.tachiyomi.data.track.TrackService
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.UnmeteredSource
 import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.model.toMangaInfo
 import eu.kanade.tachiyomi.source.model.toSChapter
 import eu.kanade.tachiyomi.source.model.toSManga
-import eu.kanade.tachiyomi.util.chapter.NoChaptersException
-import eu.kanade.tachiyomi.util.chapter.syncChaptersWithSource
-import eu.kanade.tachiyomi.util.chapter.syncChaptersWithTrackServiceTwoWay
 import eu.kanade.tachiyomi.util.lang.withIOContext
 import eu.kanade.tachiyomi.util.prepUpdateCover
 import eu.kanade.tachiyomi.util.shouldDownloadNewChapters
@@ -51,16 +63,20 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import logcat.LogPriority
+import tachiyomi.source.model.MangaInfo
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import eu.kanade.domain.chapter.model.Chapter as DomainChapter
+import eu.kanade.domain.manga.model.Manga as DomainManga
 
 /**
  * This class will take care of updating the chapters of the manga from the library. It can be
@@ -71,12 +87,20 @@ import java.util.concurrent.atomic.AtomicInteger
  * destroyed.
  */
 class LibraryUpdateService(
-    val db: DatabaseHelper = Injekt.get(),
     val sourceManager: SourceManager = Injekt.get(),
     val preferences: PreferencesHelper = Injekt.get(),
     val downloadManager: DownloadManager = Injekt.get(),
     val trackManager: TrackManager = Injekt.get(),
     val coverCache: CoverCache = Injekt.get(),
+    private val getLibraryManga: GetLibraryManga = Injekt.get(),
+    private val getManga: GetManga = Injekt.get(),
+    private val updateManga: UpdateManga = Injekt.get(),
+    private val getChapterByMangaId: GetChapterByMangaId = Injekt.get(),
+    private val getCategories: GetCategories = Injekt.get(),
+    private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
+    private val getTracks: GetTracks = Injekt.get(),
+    private val insertTrack: InsertTrack = Injekt.get(),
+    private val syncChaptersWithTrackServiceTwoWay: SyncChaptersWithTrackServiceTwoWay = Injekt.get(),
 ) : Service() {
 
     private lateinit var wakeLock: PowerManager.WakeLock
@@ -172,6 +196,8 @@ class LibraryUpdateService(
      */
     override fun onDestroy() {
         updateJob?.cancel()
+        // Despite what Android Studio
+        // states this can be null
         ioScope?.cancel()
         if (wakeLock.isHeld) {
             wakeLock.release()
@@ -207,7 +233,7 @@ class LibraryUpdateService(
         ioScope?.cancel()
 
         // Update favorite manga
-        val categoryId = intent.getIntExtra(KEY_CATEGORY, -1)
+        val categoryId = intent.getLongExtra(KEY_CATEGORY, -1L)
         addMangaToQueue(categoryId)
 
         // Destroy service when completed or in case of an error.
@@ -233,11 +259,11 @@ class LibraryUpdateService(
      *
      * @param categoryId the ID of the category to update, or -1 if no category specified.
      */
-    fun addMangaToQueue(categoryId: Int) {
-        val libraryManga = db.getLibraryMangas().executeAsBlocking()
+    fun addMangaToQueue(categoryId: Long) {
+        val libraryManga = runBlocking { getLibraryManga.await() }
 
-        val listToUpdate = if (categoryId != -1) {
-            libraryManga.filter { it.category == categoryId }
+        val listToUpdate = if (categoryId != -1L) {
+            libraryManga.filter { it.category.toLong() == categoryId }
         } else {
             val categoriesToUpdate = preferences.libraryUpdateCategories().get().map(String::toInt)
             val listToInclude = if (categoriesToUpdate.isNotEmpty()) {
@@ -282,7 +308,7 @@ class LibraryUpdateService(
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
         val currentlyUpdatingManga = CopyOnWriteArrayList<LibraryManga>()
-        val newUpdates = CopyOnWriteArrayList<Pair<LibraryManga, Array<Chapter>>>()
+        val newUpdates = CopyOnWriteArrayList<Pair<DomainManga, Array<DomainChapter>>>()
         val skippedUpdates = CopyOnWriteArrayList<Pair<Manga, String?>>()
         val failedUpdates = CopyOnWriteArrayList<Pair<Manga, String?>>()
         val hasDownloads = AtomicBoolean(false)
@@ -302,7 +328,7 @@ class LibraryUpdateService(
                                 }
 
                                 // Don't continue to update if manga not in library
-                                db.getManga(manga.id!!).executeAsBlocking() ?: return@forEach
+                                manga.id?.let { getManga.await(it) } ?: return@forEach
 
                                 withUpdateNotification(
                                     currentlyUpdatingManga,
@@ -322,19 +348,26 @@ class LibraryUpdateService(
 
                                             else -> {
                                                 // Convert to the manga that contains new chapters
-                                                val (newChapters, _) = updateManga(mangaWithNotif)
+                                                mangaWithNotif.toDomainManga()?.let { domainManga ->
+                                                    val (newChapters, _) = updateManga(domainManga)
+                                                    val newDbChapters = newChapters.map { it.toDbChapter() }
 
-                                                if (newChapters.isNotEmpty()) {
-                                                    if (mangaWithNotif.shouldDownloadNewChapters(db, preferences)) {
-                                                        downloadChapters(mangaWithNotif, newChapters)
-                                                        hasDownloads.set(true)
+                                                    if (newChapters.isNotEmpty()) {
+                                                        val categoryIds = getCategories.await(domainManga.id).map { it.id }
+                                                        if (domainManga.shouldDownloadNewChapters(categoryIds, preferences)) {
+                                                            downloadChapters(mangaWithNotif, newDbChapters)
+                                                            hasDownloads.set(true)
+                                                        }
+
+                                                        // Convert to the manga that contains new chapters
+                                                        newUpdates.add(
+                                                            mangaWithNotif.toDomainManga()!! to
+                                                                newDbChapters
+                                                                    .map { it.toDomainChapter()!! }
+                                                                    .sortedByDescending { it.sourceOrder }
+                                                                    .toTypedArray(),
+                                                        )
                                                     }
-
-                                                    // Convert to the manga that contains new chapters
-                                                    newUpdates.add(
-                                                        mangaWithNotif to newChapters.sortedByDescending { ch -> ch.source_order }
-                                                            .toTypedArray(),
-                                                    )
                                                 }
                                             }
                                         }
@@ -385,7 +418,7 @@ class LibraryUpdateService(
     private fun downloadChapters(manga: Manga, chapters: List<Chapter>) {
         // We don't want to start downloading while the library is updating, because websites
         // may don't like it and they could ban the user.
-        downloadManager.downloadChapters(manga, chapters, false)
+        downloadManager.downloadChapters(manga.toDomainManga()!!, chapters, false)
     }
 
     /**
@@ -394,39 +427,27 @@ class LibraryUpdateService(
      * @param manga the manga to update.
      * @return a pair of the inserted and removed chapters.
      */
-    private suspend fun updateManga(manga: Manga): Pair<List<Chapter>, List<Chapter>> {
+    private suspend fun updateManga(manga: DomainManga): Pair<List<DomainChapter>, List<DomainChapter>> {
         val source = sourceManager.getOrStub(manga.source)
 
-        var updatedManga: SManga = manga
+        val mangaInfo: MangaInfo = manga.toMangaInfo()
 
-        // Update manga details metadata
+        // Update manga metadata if needed
         if (preferences.autoUpdateMetadata()) {
-            val updatedMangaDetails = source.getMangaDetails(manga.toMangaInfo())
-            val sManga = updatedMangaDetails.toSManga()
-            // Avoid "losing" existing cover
-            if (!sManga.thumbnail_url.isNullOrEmpty()) {
-                manga.prepUpdateCover(coverCache, sManga, false)
-            } else {
-                sManga.thumbnail_url = manga.thumbnail_url
-            }
-
-            updatedManga = sManga
+            val updatedMangaInfo = source.getMangaDetails(manga.toMangaInfo())
+            updateManga.awaitUpdateFromSource(manga, updatedMangaInfo, manualFetch = false, coverCache)
         }
 
-        val chapters = source.getChapterList(updatedManga.toMangaInfo())
+        val chapters = source.getChapterList(mangaInfo)
             .map { it.toSChapter() }
 
         // Get manga from database to account for if it was removed during the update
-        val dbManga = db.getManga(manga.id!!).executeAsBlocking()
+        val dbManga = getManga.await(manga.id)
             ?: return Pair(emptyList(), emptyList())
-
-        // Copy into [dbManga] to retain favourite value
-        dbManga.copyFrom(updatedManga)
-        db.insertManga(dbManga).executeAsBlocking()
 
         // [dbmanga] was used so that manga data doesn't get overwritten
         // in case manga gets new chapter
-        return syncChaptersWithSource(db, chapters, dbManga, source)
+        return syncChaptersWithSource.await(chapters, dbManga, source)
     }
 
     private suspend fun updateCovers() {
@@ -458,7 +479,14 @@ class LibraryUpdateService(
                                             mangaWithNotif.prepUpdateCover(coverCache, sManga, true)
                                             sManga.thumbnail_url?.let {
                                                 mangaWithNotif.thumbnail_url = it
-                                                db.insertManga(mangaWithNotif).executeAsBlocking()
+                                                try {
+                                                    updateManga.await(
+                                                        mangaWithNotif.toDomainManga()!!
+                                                            .toMangaUpdate(),
+                                                    )
+                                                } catch (e: Exception) {
+                                                    logcat(LogPriority.ERROR) { "Manga don't exist anymore" }
+                                                }
                                             }
                                         } catch (e: Throwable) {
                                             // Ignore errors and continue
@@ -473,7 +501,6 @@ class LibraryUpdateService(
                 .awaitAll()
         }
 
-        coverCache.clearMemoryCache()
         notifier.cancelProgressNotification()
     }
 
@@ -490,7 +517,7 @@ class LibraryUpdateService(
                 return
             }
 
-            notifier.showProgressNotification(listOf(manga), progressCount++, mangaToUpdate.size)
+            notifier.showProgressNotification(listOf(manga.toDomainManga()!!), progressCount++, mangaToUpdate.size)
 
             // Update the tracking details.
             updateTrackings(manga, loggedServices)
@@ -500,18 +527,19 @@ class LibraryUpdateService(
     }
 
     private suspend fun updateTrackings(manga: LibraryManga, loggedServices: List<TrackService>) {
-        db.getTracks(manga).executeAsBlocking()
+        getTracks.await(manga.id!!)
             .map { track ->
                 supervisorScope {
                     async {
-                        val service = trackManager.getService(track.sync_id)
+                        val service = trackManager.getService(track.syncId)
                         if (service != null && service in loggedServices) {
                             try {
-                                val updatedTrack = service.refresh(track)
-                                db.insertTrack(updatedTrack).executeAsBlocking()
+                                val updatedTrack = service.refresh(track.toDbTrack())
+                                insertTrack.await(updatedTrack.toDomainTrack()!!)
 
                                 if (service is EnhancedTrackService) {
-                                    syncChaptersWithTrackServiceTwoWay(db, db.getChapters(manga).executeAsBlocking(), track, service)
+                                    val chapters = getChapterByMangaId.await(manga.id!!)
+                                    syncChaptersWithTrackServiceTwoWay.await(chapters, track, service)
                                 }
                             } catch (e: Throwable) {
                                 // Ignore errors and continue
@@ -536,7 +564,7 @@ class LibraryUpdateService(
 
         updatingManga.add(manga)
         notifier.showProgressNotification(
-            updatingManga,
+            updatingManga.map { it.toDomainManga()!! },
             completed.get(),
             mangaToUpdate.size,
         )
@@ -550,7 +578,7 @@ class LibraryUpdateService(
         updatingManga.remove(manga)
         completed.andIncrement
         notifier.showProgressNotification(
-            updatingManga,
+            updatingManga.map { it.toDomainManga()!! },
             completed.get(),
             mangaToUpdate.size,
         )

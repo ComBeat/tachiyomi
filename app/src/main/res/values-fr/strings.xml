@@ -75,7 +75,7 @@
     <string name="update_48hour">Tous les 2 jours</string>
     <string name="all">Tout</string>
     <string name="pref_library_update_restriction">Restrictions matérielles pour les mises à jour automatiques</string>
-    <string name="charging">Appareil en charge</string>
+    <string name="charging">Lors de la charge</string>
     <string name="pref_update_only_non_completed">Avec le statut « achevé »</string>
     <string name="pref_auto_update_manga_sync">Synchroniser la progression après lecture</string>
     <!-- Reader section -->
@@ -220,7 +220,6 @@
     <string name="update_check_notification_download_error">Erreur lors du téléchargement</string>
     <string name="update_check_notification_update_available">Mise à jour disponible !</string>
     <!--Content Description-->
-    <string name="description_cover">Couverture du manga</string>
     <!-- Information Text -->
     <string name="information_no_downloads">Aucun téléchargement en cours</string>
     <string name="information_no_recent">Pas de mises à jour récentes</string>
@@ -278,9 +277,6 @@
     <string name="default_category_summary">Toujours demander</string>
     <string name="pref_read_with_volume_keys_inverted">Inverser les boutons de volume</string>
     <string name="pref_crop_borders">Rogner les bordures</string>
-    <string name="backup_restore_content">La restauration utilise des sources pour obtenir les données, des frais d\'opérateur peuvent s\'appliquer.
-\n
-\nAssurez-vous d\'avoir installé toutes les extensions nécessaires et d\'être connecté aux sources et services de suivi avant de commencer la restauration.</string>
     <string name="action_global_search">Recherche globale</string>
     <string name="other_source">Autre</string>
     <string name="action_global_search_hint">Recherche globale…</string>
@@ -304,8 +300,6 @@
 \nUne extension malveillante pourrait lire n\'importe quel identifiant de connexion stocké dans Tachiyomi ou exécuter un code arbitraire.
 \n
 \nEn faisant confiance à ce certificat, vous acceptez ces risques.</string>
-    <string name="ext_version_info">Version : %1$s</string>
-    <string name="ext_language_info">Langue : %1$s</string>
     <string name="pref_double_tap_anim_speed">Vitesse d\'animation du double-clic</string>
     <string name="double_tap_anim_speed_0">Sans animation</string>
     <string name="double_tap_anim_speed_normal">Normale</string>
@@ -485,7 +479,7 @@
     </plurals>
     <string name="battery_optimization_setting_activity_not_found">Impossible d\'ouvrir les paramètres de l\'appareil</string>
     <string name="action_display_unread_badge">Chapitres non lus</string>
-    <string name="pref_refresh_library_covers">Actualiser les couvertures des séries de la bibliothèque</string>
+    <string name="pref_refresh_library_covers">Actualiser les couvertures de la bibliothèque</string>
     <string name="tracking_info">Permet de synchroniser automatiquement les chapitres lus avec les services externes proposés. Allez dans le bouton « Suivi » d\'une série pour activer son suivi.</string>
     <string name="unofficial_extension_message">Cette extension ne fait pas partie de la liste des extensions officielles de Tachiyomi.</string>
     <string name="ext_unofficial">Non officiel</string>
@@ -495,9 +489,7 @@
     <string name="label_data">Donnée</string>
     <string name="backup_restore_missing_sources">Sources manquantes :</string>
     <string name="invalid_backup_file_missing_manga">La sauvegarde ne contient aucune série.</string>
-    <string name="invalid_backup_file_missing_data">Il manque des données au fichier.</string>
     <string name="invalid_backup_file">Fichier de sauvegarde invalide</string>
-    <string name="source_not_found_name">Source introuvable : %1$s</string>
     <string name="pref_library_update_refresh_metadata">Actualiser automatiquement les métadonnées</string>
     <string name="action_migrate">Migrer</string>
     <string name="action_display_comfortable_grid">Grille espacée</string>
@@ -543,9 +535,9 @@
     <string name="download_notifier_download_finish">Téléchargement terminé</string>
     <string name="channel_errors">Erreurs</string>
     <string name="backup_restore_missing_trackers">Traceurs non connectés :</string>
-    <string name="pref_remove_bookmarked_chapters">Permettre la suppression des chapitres marqués d\'un maque-page</string>
+    <string name="pref_remove_bookmarked_chapters">Permettre la suppression des chapitres marqués d\'un marque-page</string>
     <string name="pref_category_delete_chapters">Supprimer des chapitres</string>
-    <string name="ext_nsfw_warning">Peut contenir du contenu +18</string>
+    <string name="ext_nsfw_warning">Les sources de cette extension peuvent contenir du contenu NSFW (18+)</string>
     <string name="ext_nsfw_short">18+</string>
     <string name="parental_controls_info">Ceci n\'empêche pas les extensions non officielles ou potentiellement mal signalées de diffuser du contenu +18 dans l\'application.</string>
     <plurals name="missing_chapters_warning">
@@ -693,8 +685,8 @@
     <string name="pref_remove_exclude_categories">Catégories exclues</string>
     <string name="ext_app_info">Infos sur l\'application</string>
     <string name="ext_installer_shizuku_unavailable_dialog">Installez et démarrez Shizuku pour utiliser Shizuku comme installateur d\'extensions.</string>
-    <string name="ext_installer_shizuku_stopped">Shizuku n\'est pas en exécution</string>
-    <string name="ext_installer_legacy">Legacy</string>
+    <string name="ext_installer_shizuku_stopped">Shizuku n\'est pas en cours d\'exécution</string>
+    <string name="ext_installer_legacy">Ancienne</string>
     <string name="ext_installer_pref">Installateur</string>
     <string name="ext_install_service_notif">Installation de l\'extension…</string>
     <string name="action_sort_count">Total des mangas</string>
@@ -751,11 +743,10 @@
     <string name="pref_clear_webview_data">Effacer les données WebView</string>
     <string name="webview_data_deleted">Données WebView effacées</string>
     <string name="action_close">Fermer</string>
-    <string name="battery_not_low">Batterie non faible</string>
+    <string name="battery_not_low">Quand la batterie n\'est pas faible</string>
     <string name="pref_duplicate_pinned_sources_summary">Répéter les sources épinglées dans leurs groupes linguistiques respectifs</string>
     <string name="pref_duplicate_pinned_sources">Afficher les sources épinglées en double</string>
     <string name="source_filter_empty_screen">Aucune source installée trouvée</string>
-    <string name="migrate_empty_screen">Eh bien, c\'est gênant</string>
     <string name="action_sort_last_manga_update">Dernière mise à jour du manga</string>
     <string name="action_sort_unread_count">Nombre de non-lus</string>
     <string name="source_empty_screen">Aucune source trouvée</string>
@@ -763,8 +754,30 @@
     <string name="split_tall_images_summary">Améliore les performances du lecteur en fractionnant les grandes images téléchargées.</string>
     <string name="download_notifier_split_page_not_found">Page %d introuvable lors du fractionnement</string>
     <string name="download_notifier_split_page_path_not_found">Impossible de trouver le chemin du fichier de la page %d</string>
-    <string name="pref_reset_viewer_flags">Réinitialiser les paramètres du lecteur</string>
+    <string name="pref_reset_viewer_flags">Réinitialiser les paramètres du lecteur par série</string>
     <string name="pref_reset_viewer_flags_summary">Réinitialise le mode de lecture et l\'orientation de toutes les séries</string>
     <string name="pref_reset_viewer_flags_success">Paramètres du lecteur réinitialisés</string>
     <string name="pref_reset_viewer_flags_error">Impossible de réinitialiser les paramètres du lecteur</string>
+    <string name="download_notifier_split_failed">Impossible de diviser l\'image téléchargée</string>
+    <string name="empty_screen">Eh bien, c\'est gênant</string>
+    <string name="ext_info_version">Version</string>
+    <string name="ext_info_language">Langue</string>
+    <string name="ext_info_age_rating">Classification par âge</string>
+    <string name="reading_list">Liste de lecture</string>
+    <string name="wish_list">Liste de souhaits</string>
+    <string name="on_hold_list">Liste d\'attente</string>
+    <string name="unfinished_list">Liste des non terminés</string>
+    <string name="complete_list">Liste des lectures terminées</string>
+    <string name="network_not_metered">Uniquement sur réseau illimité</string>
+    <string name="cant_open_last_read_chapter">Impossible d\'ouvrir le dernier chapitre lu</string>
+    <string name="custom_cover">Couverture personnalisée</string>
+    <string name="not_installed">Non installé</string>
+    <string name="pref_app_language">Pas installé</string>
+    <string name="description_placeholder">Aucune description</string>
+    <string name="theme_lavender">Lavande</string>
+    <string name="delete_category">Effacer catégorie</string>
+    <string name="delete_category_confirmation">Souhaitez-vous supprimer la catégorie « %s » \?</string>
+    <string name="internal_error">ErreurInterne : Vérifiez votre journal de plante pour plus d\'information</string>
+    <string name="pref_reset_user_agent_string">Réinitialiser le numéro d\'utilisateur par défaut</string>
+    <string name="pref_user_agent_string">Numéro d\'utilisateur par défaut</string>
 </resources>

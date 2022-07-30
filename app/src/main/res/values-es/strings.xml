@@ -2,8 +2,8 @@
 <resources>
     <string name="name">Nombre</string>
     <!-- Activities and fragments labels (toolbar title) -->
-    <string name="label_settings">Herramientas</string>
-    <string name="label_download_queue">Descargas en espera</string>
+    <string name="label_settings">Ajustes</string>
+    <string name="label_download_queue">Cola de descargas</string>
     <string name="label_library">Biblioteca</string>
     <string name="label_recent_manga">Historial</string>
     <string name="label_recent_updates">Actualizaciones</string>
@@ -193,7 +193,6 @@
     <string name="update_check_notification_download_error">Error de descarga</string>
     <string name="update_check_notification_update_available">¡Nueva versión disponible!</string>
     <!--Content Description-->
-    <string name="description_cover">Portada del manga</string>
     <!-- Information Text -->
     <string name="information_no_downloads">No hay descargas</string>
     <string name="information_no_recent">No hay actualizaciones recientes</string>
@@ -256,9 +255,6 @@
     <string name="pref_backup_slots">Copias de seguridad máximas</string>
     <string name="backup_created">Copia de seguridad creada</string>
     <string name="restore_completed">Restauración completada</string>
-    <string name="backup_restore_content">Restaurar utiliza fuentes de Internet para obtener los datos, es posible que te cueste dinero dependiendo de tu tarifa de datos móviles.
-\n
-\nAsegúrate de haber instalado todas las extensiones necesarias y de haber iniciado sesión en las fuentes y los servicios de seguimiento antes de empezar a restaurar.</string>
     <string name="backup_choice">¿De qué quieres hacer una copia de seguridad\?</string>
     <string name="restoring_backup">Restaurando copia de seguridad</string>
     <string name="creating_backup">Creando copia de seguridad</string>
@@ -286,7 +282,7 @@
     <string name="action_global_search_hint">Búsqueda global…</string>
     <string name="latest">Recientes</string>
     <string name="browse">Explorar</string>
-    <string name="channel_common">Común</string>
+    <string name="channel_common">Comunes</string>
     <string name="information_empty_category">No hay categorías. Pulsa el botón «+» para crear una y organizar tu biblioteca.</string>
     <string name="label_migration">Migrar</string>
     <string name="label_extensions">Extensiones</string>
@@ -302,8 +298,6 @@
     <string name="ext_untrusted">No confiable</string>
     <string name="ext_uninstall">Desinstalar</string>
     <string name="untrusted_extension">Extensión no confiable</string>
-    <string name="ext_version_info">Versión: %1$s</string>
-    <string name="ext_language_info">Idioma: %1$s</string>
     <string name="double_tap_anim_speed_normal">Normal</string>
     <string name="double_tap_anim_speed_fast">Rápida</string>
     <string name="transition_next">Siguiente:</string>
@@ -387,7 +381,7 @@
     <string name="pref_cutout_short">Mostrar contenido en el área recortada</string>
     <string name="information_cloudflare_bypass_failure">Fallo al evitar Cloudflare</string>
     <string name="information_webview_outdated">Actualiza la aplicación WebView para mejorar la compatibilidad</string>
-    <string name="channel_new_chapters">Capítulos actualizados</string>
+    <string name="channel_new_chapters">Nuevos capítulos</string>
     <string name="unlock_app">Desbloquear Tachiyomi</string>
     <string name="secure_screen_summary">Pantalla segura oculta el contenido al cambiar de aplicación y bloquea las capturas de pantalla</string>
     <string name="pref_category_display">Visualización</string>
@@ -426,7 +420,7 @@
     <string name="updating_library">Actualizando biblioteca</string>
     <string name="http_error_hint">Abrir sitio en WebView</string>
     <string name="pref_enable_automatic_extension_updates">Buscar actualizaciones de extensiones</string>
-    <string name="channel_ext_updates">Actualizaciones de extensión</string>
+    <string name="channel_ext_updates">Actualizaciones de extensiones</string>
     <string name="pref_skip_filtered_chapters">Saltar capítulos excluidos por filtros</string>
     <string name="pref_category_reading">Lectura</string>
     <string name="label_sources">Fuentes</string>
@@ -478,7 +472,7 @@
         <item quantity="other">%d categorías</item>
     </plurals>
     <string name="battery_optimization_setting_activity_not_found">No se pudieron abrir los ajustes del dispositivo</string>
-    <string name="pref_refresh_library_covers">Volver a descargar las portadas del manga en la biblioteca</string>
+    <string name="pref_refresh_library_covers">Volver a descargar las portadas en la biblioteca</string>
     <plurals name="restore_completed_message">
         <item quantity="one">Completada en %1$s con %2$s error</item>
         <item quantity="other">Completada en %1$s con %2$s errores</item>
@@ -490,10 +484,8 @@
     <string name="label_data">Datos</string>
     <string name="backup_restore_missing_sources">Fuentes que faltan:</string>
     <string name="invalid_backup_file_missing_manga">La copia de respaldo no contiene ningún manga.</string>
-    <string name="invalid_backup_file_missing_data">Faltan datos en el archivo.</string>
     <string name="invalid_backup_file">El archivo de copia de respaldo no es correcto</string>
     <string name="tracker_not_logged_in">No has iniciado sesión: %1$s</string>
-    <string name="source_not_found_name">Fuente no encontrada: %1$s</string>
     <string name="pref_library_update_refresh_metadata_summary">Comprobar si hay una nueva portada y detalles al actualizar la biblioteca</string>
     <string name="pref_library_update_refresh_metadata">Actualizar automáticamente los metadatos</string>
     <string name="action_display_comfortable_grid">Rejilla amplia</string>
@@ -501,7 +493,7 @@
     <string name="tabs_header">Pestañas</string>
     <string name="badges_header">Insignias</string>
     <string name="action_display_show_tabs">Mostrar pestañas de categorías</string>
-    <string name="page_list_empty_error">No hay páginas</string>
+    <string name="page_list_empty_error">No parece haber ninguna página</string>
     <string name="action_disable_all">Deshabilitar todo</string>
     <string name="action_enable_all">Habilitar todo</string>
     <string name="pref_show_reading_mode_summary">Mostrar brevemente el modo actual al abrir el lector</string>
@@ -536,9 +528,9 @@
     </plurals>
     <string name="no_pinned_sources">Todavía no has anclado ninguna fuente</string>
     <string name="download_notifier_download_finish">Descarga completada</string>
-    <string name="channel_complete">Completo</string>
-    <string name="channel_progress">Progreso</string>
-    <string name="channel_errors">Errores</string>
+    <string name="channel_complete">Terminadas</string>
+    <string name="channel_progress">En progreso</string>
+    <string name="channel_errors">Con errores</string>
     <string name="backup_restore_missing_trackers">Servicios de seguimiento sin conectar:</string>
     <string name="pref_remove_bookmarked_chapters">Permitir el borrado de capítulos marcados como favoritos</string>
     <string name="pref_category_delete_chapters">Borrar capítulos</string>
@@ -750,19 +742,39 @@
     <string name="action_close">Cerrar</string>
     <string name="pref_duplicate_pinned_sources_summary">Repetir fuentes ancladas en sus respectivos grupos de idiomas</string>
     <string name="pref_duplicate_pinned_sources">Mostrar fuentes duplicadas ancladas</string>
-    <string name="battery_not_low">Batería cargada</string>
-    <string name="migrate_empty_screen">Vaya, hemos tenido algún problemilla</string>
+    <string name="battery_not_low">Cuando la batería no esté baja</string>
     <string name="source_filter_empty_screen">No se ha instalado ninguna fuente</string>
     <string name="source_empty_screen">No se ha encontrado ninguna fuente</string>
     <string name="action_sort_last_manga_update">Última actualización de manga</string>
-    <string name="action_sort_unread_count">Recuento no leído</string>
-    <string name="split_tall_images">Partir imágenes demasiado altas</string>
+    <string name="action_sort_unread_count">Capítulos restantes</string>
+    <string name="split_tall_images">Dividir automáticamente imágenes demasiado altas</string>
     <string name="split_tall_images_summary">Mejora el rendimiento del lector dividiendo páginas descargadas mucho más altas que anchas.</string>
     <string name="download_notifier_split_page_not_found">No se ha encontrado la página %d al dividir</string>
     <string name="download_notifier_split_page_path_not_found">La ruta al archivo de la página %d no se encuentra</string>
     <string name="pref_reset_viewer_flags_summary">Restablece el modo de lectura y orientación en toda la biblioteca</string>
     <string name="pref_reset_viewer_flags_success">Se han restablecido los ajustes del visor</string>
-    <string name="pref_reset_viewer_flags">Restablecer indicadores del visor</string>
+    <string name="pref_reset_viewer_flags">Restablecer ajustes del visor para este manga</string>
     <string name="pref_reset_viewer_flags_error">No se pudieron restablecer los ajustes del visor</string>
     <string name="download_notifier_split_failed">No se pudo dividir la imagen descargada</string>
+    <string name="empty_screen">Houston, tenemos un problema</string>
+    <string name="ext_info_version">Versión</string>
+    <string name="ext_info_language">Idioma</string>
+    <string name="ext_info_age_rating">Clasificación por edades</string>
+    <string name="reading_list">Leyendo</string>
+    <string name="wish_list">A leer en un futuro</string>
+    <string name="complete_list">Manga terminado</string>
+    <string name="on_hold_list">En pausa</string>
+    <string name="unfinished_list">Sin terminar</string>
+    <string name="network_not_metered">Solo en conexiones no medidas</string>
+    <string name="cant_open_last_read_chapter">No se pudo abrir el último capítulo leído</string>
+    <string name="custom_cover">Portada personalizada</string>
+    <string name="not_installed">Sin instalar</string>
+    <string name="pref_app_language">Idioma de la aplicación</string>
+    <string name="theme_lavender">Lavanda</string>
+    <string name="description_placeholder">Sin descripción</string>
+    <string name="delete_category">Borrar categoría</string>
+    <string name="delete_category_confirmation">¿Quieres borrar la categoría «%s»\?</string>
+    <string name="internal_error">ErrorInterno: Mira el registro de depuración para más información</string>
+    <string name="pref_user_agent_string">Nombre del navegador a usar («user agent»)</string>
+    <string name="pref_reset_user_agent_string">Restablecer el nombre del navegador («user agent»)</string>
 </resources>

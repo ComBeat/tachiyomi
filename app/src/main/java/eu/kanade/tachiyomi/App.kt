@@ -25,15 +25,17 @@ import coil.decode.ImageDecoderDecoder
 import coil.disk.DiskCache
 import coil.util.DebugLogger
 import eu.kanade.domain.DomainModule
+import eu.kanade.tachiyomi.data.coil.DomainMangaKeyer
 import eu.kanade.tachiyomi.data.coil.MangaCoverFetcher
 import eu.kanade.tachiyomi.data.coil.MangaCoverKeyer
+import eu.kanade.tachiyomi.data.coil.MangaKeyer
 import eu.kanade.tachiyomi.data.coil.TachiyomiImageDecoder
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.data.preference.PreferenceValues
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.ui.base.delegate.SecureActivityDelegate
-import eu.kanade.tachiyomi.util.preference.asImmediateFlow
+import eu.kanade.tachiyomi.util.preference.asHotFlow
 import eu.kanade.tachiyomi.util.system.AuthenticatorUtil
 import eu.kanade.tachiyomi.util.system.WebViewUtil
 import eu.kanade.tachiyomi.util.system.animatorDurationScale
@@ -53,6 +55,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import uy.kohesive.injekt.injectLazy
 import java.security.Security
+import java.util.Date
 
 class App : Application(), DefaultLifecycleObserver, ImageLoaderFactory {
 
@@ -112,7 +115,7 @@ class App : Application(), DefaultLifecycleObserver, ImageLoaderFactory {
             .launchIn(ProcessLifecycleOwner.get().lifecycleScope)
 
         preferences.themeMode()
-            .asImmediateFlow {
+            .asHotFlow {
                 AppCompatDelegate.setDefaultNightMode(
                     when (it) {
                         PreferenceValues.ThemeMode.light -> AppCompatDelegate.MODE_NIGHT_NO
@@ -139,6 +142,10 @@ class App : Application(), DefaultLifecycleObserver, ImageLoaderFactory {
                 }
                 add(TachiyomiImageDecoder.Factory())
                 add(MangaCoverFetcher.Factory(lazy(callFactoryInit), lazy(diskCacheInit)))
+                add(MangaCoverFetcher.DomainMangaFactory(lazy(callFactoryInit), lazy(diskCacheInit)))
+                add(MangaCoverFetcher.MangaCoverFactory(lazy(callFactoryInit), lazy(diskCacheInit)))
+                add(MangaKeyer())
+                add(DomainMangaKeyer())
                 add(MangaCoverKeyer())
             }
             callFactory(callFactoryInit)
@@ -150,6 +157,7 @@ class App : Application(), DefaultLifecycleObserver, ImageLoaderFactory {
     }
 
     override fun onStop(owner: LifecycleOwner) {
+        preferences.lastAppClosed().set(Date().time)
         if (!AuthenticatorUtil.isAuthenticating && preferences.lockAppAfter().get() >= 0) {
             SecureActivityDelegate.locked = true
         }

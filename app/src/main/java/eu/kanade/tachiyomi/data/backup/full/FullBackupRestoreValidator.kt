@@ -43,7 +43,12 @@ class FullBackupRestoreValidator : AbstractBackupRestoreValidator() {
         val sources = backup.backupSources.associate { it.sourceId to it.name }
         val missingSources = sources
             .filter { sourceManager.get(it.key) == null }
-            .values
+            .values.map {
+                val id = it.toLongOrNull()
+                if (id == null) it
+                else sourceManager.getOrStub(id).toString()
+            }
+            .distinct()
             .sorted()
 
         val trackers = backup.backupManga
@@ -51,7 +56,7 @@ class FullBackupRestoreValidator : AbstractBackupRestoreValidator() {
             .map { it.syncId }
             .distinct()
         val missingTrackers = trackers
-            .mapNotNull { trackManager.getService(it) }
+            .mapNotNull { trackManager.getService(it.toLong()) }
             .filter { !it.isLogged }
             .map { context.getString(it.nameRes()) }
             .sorted()

@@ -19,14 +19,19 @@ class HistoryRepositoryImpl(
     override fun getHistory(query: String): PagingSource<Long, HistoryWithRelations> {
         return handler.subscribeToPagingSource(
             countQuery = { historyViewQueries.countHistory(query) },
-            transacter = { historyViewQueries },
             queryProvider = { limit, offset ->
                 historyViewQueries.history(query, limit, offset, historyWithRelationsMapper)
             },
         )
     }
 
-    override suspend fun getNextChapterForManga(mangaId: Long, chapterId: Long): Chapter? {
+    override suspend fun getLastHistory(): HistoryWithRelations? {
+        return handler.awaitOneOrNull {
+            historyViewQueries.getLatestHistory(historyWithRelationsMapper)
+        }
+    }
+
+    override suspend fun getNextChapter(mangaId: Long, chapterId: Long): Chapter? {
         val chapter = handler.awaitOne { chaptersQueries.getChapterById(chapterId, chapterMapper) }
         val manga = handler.awaitOne { mangasQueries.getMangaById(mangaId, mangaMapper) }
 
@@ -41,7 +46,7 @@ class HistoryRepositoryImpl(
             else -> throw NotImplementedError("Unknown sorting method")
         }
 
-        val chapters = handler.awaitList { chaptersQueries.getChapterByMangaId(mangaId, chapterMapper) }
+        val chapters = handler.awaitList { chaptersQueries.getChaptersByMangaId(mangaId, chapterMapper) }
             .sortedWith(sortFunction)
 
         val currChapterIndex = chapters.indexOfFirst { chapter.id == it.id }

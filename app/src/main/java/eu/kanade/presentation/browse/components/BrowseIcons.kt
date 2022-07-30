@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dangerous
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -14,6 +18,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -24,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import coil.compose.AsyncImage
 import eu.kanade.domain.source.model.Source
-import eu.kanade.presentation.util.bitmapPainterResource
+import eu.kanade.presentation.util.rememberResourceBitmapPainter
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.extension.model.Extension
 import eu.kanade.tachiyomi.util.lang.withIOContext
@@ -40,18 +45,29 @@ fun SourceIcon(
 ) {
     val icon = source.icon
 
-    if (icon != null) {
-        Image(
-            bitmap = icon,
-            contentDescription = "",
-            modifier = modifier.then(defaultModifier),
-        )
-    } else {
-        Image(
-            painter = painterResource(id = R.mipmap.ic_local_source),
-            contentDescription = "",
-            modifier = modifier.then(defaultModifier),
-        )
+    when {
+        source.isStub && icon == null -> {
+            Image(
+                imageVector = Icons.Default.Warning,
+                contentDescription = "",
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.error),
+                modifier = modifier.then(defaultModifier),
+            )
+        }
+        icon != null -> {
+            Image(
+                bitmap = icon,
+                contentDescription = "",
+                modifier = modifier.then(defaultModifier),
+            )
+        }
+        else -> {
+            Image(
+                painter = painterResource(id = R.mipmap.ic_local_source),
+                contentDescription = "",
+                modifier = modifier.then(defaultModifier),
+            )
+        }
     }
 }
 
@@ -67,7 +83,7 @@ fun ExtensionIcon(
                 model = extension.iconUrl,
                 contentDescription = "",
                 placeholder = ColorPainter(Color(0x1F888888)),
-                error = bitmapPainterResource(id = R.drawable.cover_error),
+                error = rememberResourceBitmapPainter(id = R.drawable.cover_error),
                 modifier = modifier
                     .clip(RoundedCornerShape(4.dp))
                     .then(defaultModifier),
@@ -90,8 +106,9 @@ fun ExtensionIcon(
             }
         }
         is Extension.Untrusted -> Image(
-            bitmap = ImageBitmap.imageResource(id = R.mipmap.ic_untrusted_source),
+            imageVector = Icons.Default.Dangerous,
             contentDescription = "",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.error),
             modifier = modifier.then(defaultModifier),
         )
     }
