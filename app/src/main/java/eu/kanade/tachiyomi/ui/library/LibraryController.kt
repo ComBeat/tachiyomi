@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import eu.kanade.domain.category.model.Category
-import eu.kanade.domain.category.model.toDbCategory
 import eu.kanade.domain.manga.model.Manga
 import eu.kanade.domain.manga.model.toDbManga
 import eu.kanade.presentation.library.LibraryScreen
@@ -23,7 +22,7 @@ import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchController
 import eu.kanade.tachiyomi.ui.main.MainActivity
 import eu.kanade.tachiyomi.ui.manga.MangaController
 import eu.kanade.tachiyomi.util.lang.launchIO
-import eu.kanade.tachiyomi.util.lang.launchUI
+import eu.kanade.tachiyomi.util.lang.withUIContext
 import eu.kanade.tachiyomi.util.system.toast
 import eu.kanade.tachiyomi.widget.materialdialogs.QuadStateTextView
 import kotlinx.coroutines.cancel
@@ -58,9 +57,9 @@ class LibraryController(
             onDeleteClicked = ::showDeleteMangaDialog,
             onClickFilter = ::showSettingsSheet,
             onClickRefresh = {
-                if (LibraryUpdateService.start(context, it)) {
-                    context.toast(R.string.updating_library)
-                }
+                val started = LibraryUpdateService.start(context, it)
+                context.toast(if (started) R.string.updating_library else R.string.update_already_running)
+                started
             },
             onClickInvertSelection = { presenter.invertSelection(presenter.activeCategory) },
             onClickSelectAll = { presenter.selectAll(presenter.activeCategory) },
@@ -68,7 +67,10 @@ class LibraryController(
         )
         LaunchedEffect(presenter.selectionMode) {
             val activity = (activity as? MainActivity) ?: return@LaunchedEffect
-            activity.showBottomNav(presenter.selectionMode.not())
+            // Could perhaps be removed when navigation is in a Compose world
+            if (router.backstackSize == 1) {
+                activity.showBottomNav(presenter.selectionMode.not())
+            }
         }
         LaunchedEffect(presenter.isLoading) {
             if (presenter.isLoading.not()) {
@@ -119,12 +121,8 @@ class LibraryController(
     }
 
     fun showSettingsSheet() {
-        if (presenter.categories.isNotEmpty()) {
-            presenter.categories[presenter.activeCategory].let { category ->
-                settingsSheet?.show(category.toDbCategory())
-            }
-        } else {
-            settingsSheet?.show()
+        presenter.categories.getOrNull(presenter.activeCategory)?.let { category ->
+            settingsSheet?.show(category)
         }
     }
 
@@ -187,7 +185,7 @@ class LibraryController(
                     else -> QuadStateTextView.State.UNCHECKED.ordinal
                 }
             }.toTypedArray()
-            launchUI {
+            withUIContext {
                 ChangeMangaCategoriesDialog(this@LibraryController, mangas.mapNotNull { it.toDomainManga() }, categories, preselected)
                     .showDialog(router)
             }

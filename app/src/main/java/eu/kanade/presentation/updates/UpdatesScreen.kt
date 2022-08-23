@@ -1,6 +1,7 @@
 package eu.kanade.presentation.updates
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -10,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FlipToBack
@@ -19,10 +18,19 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -30,6 +38,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.ChapterDownloadAction
 import eu.kanade.presentation.components.EmptyScreen
+import eu.kanade.presentation.components.LazyColumn
 import eu.kanade.presentation.components.MangaBottomActionMenu
 import eu.kanade.presentation.components.Scaffold
 import eu.kanade.presentation.components.SwipeRefreshIndicator
@@ -38,97 +47,101 @@ import eu.kanade.presentation.util.bottomNavPaddingValues
 import eu.kanade.presentation.util.plus
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.download.model.Download
-import eu.kanade.tachiyomi.data.preference.PreferencesHelper
+import eu.kanade.tachiyomi.data.library.LibraryUpdateService
+import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import eu.kanade.tachiyomi.ui.recent.updates.UpdatesItem
-import eu.kanade.tachiyomi.ui.recent.updates.UpdatesState
-import uy.kohesive.injekt.Injekt
-import uy.kohesive.injekt.api.get
-import java.text.DateFormat
+import eu.kanade.tachiyomi.ui.recent.updates.UpdatesPresenter
+import eu.kanade.tachiyomi.ui.recent.updates.UpdatesPresenter.Dialog
+import eu.kanade.tachiyomi.ui.recent.updates.UpdatesPresenter.Event
+import eu.kanade.tachiyomi.util.system.toast
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
 fun UpdateScreen(
-    state: UpdatesState.Success,
+    presenter: UpdatesPresenter,
     onClickCover: (UpdatesItem) -> Unit,
-    onClickUpdate: (UpdatesItem) -> Unit,
-    onDownloadChapter: (List<UpdatesItem>, ChapterDownloadAction) -> Unit,
-    onUpdateLibrary: () -> Unit,
     onBackClicked: () -> Unit,
-    // For bottom action menu
-    onMultiBookmarkClicked: (List<UpdatesItem>, bookmark: Boolean) -> Unit,
-    onMultiMarkAsReadClicked: (List<UpdatesItem>, read: Boolean) -> Unit,
-    onMultiDeleteClicked: (List<UpdatesItem>) -> Unit,
-    // Miscellaneous
-    preferences: PreferencesHelper = Injekt.get(),
+    onDownloadChapter: (List<UpdatesItem>, ChapterDownloadAction) -> Unit,
 ) {
     val updatesListState = rememberLazyListState()
-    val insetPaddingValue = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal).asPaddingValues()
-
-    val relativeTime: Int = remember { preferences.relativeTime().get() }
-    val dateFormat: DateFormat = remember { preferences.dateFormat() }
-
-    val uiModels = remember(state) {
-        state.uiModels
-    }
-    val itemUiModels = remember(uiModels) {
-        uiModels.filterIsInstance<UpdatesUiModel.Item>()
-    }
-    // To prevent selection from getting removed during an update to a item in list
-    val updateIdList = remember(itemUiModels) {
-        itemUiModels.map { it.item.update.chapterId }
-    }
-    val selected = remember(updateIdList) {
-        emptyList<UpdatesUiModel.Item>().toMutableStateList()
-    }
-    // First and last selected index in list
-    val selectedPositions = remember(uiModels) { arrayOf(-1, -1) }
+    val insetPaddingValue = WindowInsets.navigationBars
+        .only(WindowInsetsSides.Horizontal)
+        .asPaddingValues()
 
     val internalOnBackPressed = {
-        if (selected.isNotEmpty()) {
-            selected.clear()
+        if (presenter.selectionMode) {
+            presenter.toggleAllSelection(false)
         } else {
             onBackClicked()
         }
     }
     BackHandler(onBack = internalOnBackPressed)
 
+    val context = LocalContext.current
+
+    val onUpdateLibrary = {
+        val started = LibraryUpdateService.start(context)
+        context.toast(if (started) R.string.updating_library else R.string.update_already_running)
+        started
+    }
+
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(
         modifier = Modifier
-            .padding(insetPaddingValue),
+            .padding(insetPaddingValue)
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             UpdatesAppBar(
-                selected = selected,
-                incognitoMode = state.isIncognitoMode,
-                downloadedOnlyMode = state.isDownloadedOnlyMode,
-                onUpdateLibrary = onUpdateLibrary,
-                actionModeCounter = selected.size,
-                onSelectAll = {
-                    selected.clear()
-                    selected.addAll(itemUiModels)
-                },
-                onInvertSelection = {
-                    val toSelect = itemUiModels - selected
-                    selected.clear()
-                    selected.addAll(toSelect)
-                },
+                incognitoMode = presenter.isIncognitoMode,
+                downloadedOnlyMode = presenter.isDownloadOnly,
+                onUpdateLibrary = { onUpdateLibrary() },
+                actionModeCounter = presenter.selected.size,
+                onSelectAll = { presenter.toggleAllSelection(true) },
+                onInvertSelection = { presenter.invertSelection() },
+                onCancelActionMode = { presenter.toggleAllSelection(false) },
+                scrollBehavior = scrollBehavior,
             )
         },
         bottomBar = {
             UpdatesBottomBar(
-                selected = selected,
+                selected = presenter.selected,
                 onDownloadChapter = onDownloadChapter,
-                onMultiBookmarkClicked = onMultiBookmarkClicked,
-                onMultiMarkAsReadClicked = onMultiMarkAsReadClicked,
-                onMultiDeleteClicked = onMultiDeleteClicked,
+                onMultiBookmarkClicked = presenter::bookmarkUpdates,
+                onMultiMarkAsReadClicked = presenter::markUpdatesRead,
+                onMultiDeleteClicked = {
+                    val updateItems = presenter.selected.map { it.item }
+                    presenter.dialog = Dialog.DeleteConfirmation(updateItems)
+                },
             )
         },
     ) { contentPadding ->
-        val contentPaddingWithNavBar = bottomNavPaddingValues + contentPadding +
-            WindowInsets.navigationBars.only(WindowInsetsSides.Bottom).asPaddingValues()
+        // During selection mode bottom nav is not visible
+        val contentPaddingWithNavBar = contentPadding +
+            if (presenter.selectionMode) {
+                PaddingValues()
+            } else {
+                bottomNavPaddingValues + WindowInsets.navigationBars.only(WindowInsetsSides.Bottom).asPaddingValues()
+            }
+
+        val scope = rememberCoroutineScope()
+        var isRefreshing by remember { mutableStateOf(false) }
 
         SwipeRefresh(
-            state = rememberSwipeRefreshState(state.showSwipeRefreshIndicator),
-            onRefresh = onUpdateLibrary,
+            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+            onRefresh = {
+                val started = onUpdateLibrary()
+                if (!started) return@SwipeRefresh
+                scope.launch {
+                    // Fake refresh status but hide it after a second as it's a long running task
+                    isRefreshing = true
+                    delay(1000)
+                    isRefreshing = false
+                }
+            },
+            swipeEnabled = presenter.selectionMode.not(),
             indicatorPadding = contentPaddingWithNavBar,
             indicator = { s, trigger ->
                 SwipeRefreshIndicator(
@@ -137,13 +150,12 @@ fun UpdateScreen(
                 )
             },
         ) {
-            if (uiModels.isEmpty()) {
+            if (presenter.uiModels.isEmpty()) {
                 EmptyScreen(textResource = R.string.information_no_recent)
             } else {
                 VerticalFastScroller(
                     listState = updatesListState,
                     topContentPadding = contentPaddingWithNavBar.calculateTopPadding(),
-                    bottomContentPadding = contentPaddingWithNavBar.calculateBottomPadding(),
                     endContentPadding = contentPaddingWithNavBar.calculateEndPadding(LocalLayoutDirection.current),
                 ) {
                     LazyColumn(
@@ -152,18 +164,41 @@ fun UpdateScreen(
                         contentPadding = contentPaddingWithNavBar,
                     ) {
                         updatesUiItems(
-                            uiModels = uiModels,
-                            itemUiModels = itemUiModels,
-                            selected = selected,
-                            selectedPositions = selectedPositions,
+                            uiModels = presenter.uiModels,
+                            selectionMode = presenter.selectionMode,
+                            onUpdateSelected = presenter::toggleSelection,
                             onClickCover = onClickCover,
-                            onClickUpdate = onClickUpdate,
+                            onClickUpdate = {
+                                val intent = ReaderActivity.newIntent(context, it.update.mangaId, it.update.chapterId)
+                                context.startActivity(intent)
+                            },
                             onDownloadChapter = onDownloadChapter,
-                            relativeTime = relativeTime,
-                            dateFormat = dateFormat,
+                            relativeTime = presenter.relativeTime,
+                            dateFormat = presenter.dateFormat,
                         )
                     }
                 }
+            }
+        }
+    }
+
+    val onDismissDialog = { presenter.dialog = null }
+    when (val dialog = presenter.dialog) {
+        is Dialog.DeleteConfirmation -> {
+            UpdatesDeleteConfirmationDialog(
+                onDismissRequest = onDismissDialog,
+                onConfirm = {
+                    presenter.deleteChapters(dialog.toDelete)
+                    presenter.toggleAllSelection(false)
+                },
+            )
+        }
+        null -> {}
+    }
+    LaunchedEffect(Unit) {
+        presenter.events.collectLatest { event ->
+            when (event) {
+                Event.InternalError -> context.toast(R.string.internal_error)
             }
         }
     }
@@ -172,7 +207,6 @@ fun UpdateScreen(
 @Composable
 fun UpdatesAppBar(
     modifier: Modifier = Modifier,
-    selected: MutableList<UpdatesUiModel.Item>,
     incognitoMode: Boolean,
     downloadedOnlyMode: Boolean,
     onUpdateLibrary: () -> Unit,
@@ -180,6 +214,8 @@ fun UpdatesAppBar(
     actionModeCounter: Int,
     onSelectAll: () -> Unit,
     onInvertSelection: () -> Unit,
+    onCancelActionMode: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
 ) {
     AppBar(
         modifier = modifier,
@@ -193,7 +229,7 @@ fun UpdatesAppBar(
             }
         },
         actionModeCounter = actionModeCounter,
-        onCancelActionMode = { selected.clear() },
+        onCancelActionMode = onCancelActionMode,
         actionModeActions = {
             IconButton(onClick = onSelectAll) {
                 Icon(
@@ -210,12 +246,13 @@ fun UpdatesAppBar(
         },
         downloadedOnlyMode = downloadedOnlyMode,
         incognitoMode = incognitoMode,
+        scrollBehavior = scrollBehavior,
     )
 }
 
 @Composable
 fun UpdatesBottomBar(
-    selected: MutableList<UpdatesUiModel.Item>,
+    selected: List<UpdatesUiModel.Item>,
     onDownloadChapter: (List<UpdatesItem>, ChapterDownloadAction) -> Unit,
     onMultiBookmarkClicked: (List<UpdatesItem>, bookmark: Boolean) -> Unit,
     onMultiMarkAsReadClicked: (List<UpdatesItem>, read: Boolean) -> Unit,
@@ -226,29 +263,23 @@ fun UpdatesBottomBar(
         modifier = Modifier.fillMaxWidth(),
         onBookmarkClicked = {
             onMultiBookmarkClicked.invoke(selected.map { it.item }, true)
-            selected.clear()
         }.takeIf { selected.any { !it.item.update.bookmark } },
         onRemoveBookmarkClicked = {
             onMultiBookmarkClicked.invoke(selected.map { it.item }, false)
-            selected.clear()
         }.takeIf { selected.all { it.item.update.bookmark } },
         onMarkAsReadClicked = {
             onMultiMarkAsReadClicked(selected.map { it.item }, true)
-            selected.clear()
         }.takeIf { selected.any { !it.item.update.read } },
         onMarkAsUnreadClicked = {
             onMultiMarkAsReadClicked(selected.map { it.item }, false)
-            selected.clear()
         }.takeIf { selected.any { it.item.update.read } },
         onDownloadClicked = {
             onDownloadChapter(selected.map { it.item }, ChapterDownloadAction.START)
-            selected.clear()
         }.takeIf {
             selected.any { it.item.downloadStateProvider() != Download.State.DOWNLOADED }
         },
         onDeleteClicked = {
             onMultiDeleteClicked(selected.map { it.item })
-            selected.clear()
         }.takeIf { selected.any { it.item.downloadStateProvider() == Download.State.DOWNLOADED } },
     )
 }

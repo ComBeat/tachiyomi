@@ -171,6 +171,7 @@
     <string name="theme_tealturquoise">Teal &amp; Turquoise</string>
     <string name="theme_yinyang">Yin &amp; Yang</string>
     <string name="theme_yotsuba">Yotsuba</string>
+    <string name="theme_tidalwave">Tidal Wave</string>
     <string name="pref_dark_theme_pure_black">Pure black dark mode</string>
     <string name="pref_category_navigation">Navigation</string>
     <string name="pref_side_nav_icon_alignment">Side navigation icon alignment</string>
@@ -417,11 +418,18 @@
     <string name="pref_category_auto_download">Auto-download</string>
     <string name="pref_download_new">Download new chapters</string>
     <string name="pref_download_new_categories_details">Manga in excluded categories will not be downloaded even if they are also in included categories.</string>
+    <string name="download_ahead">Download ahead</string>
+    <string name="auto_download_while_reading">Auto download while reading</string>
+    <plurals name="next_unread_chapters">
+        <item quantity="one">Next unread chapter</item>
+        <item quantity="other">Next %d unread chapters</item>
+    </plurals>
+    <string name="download_ahead_info">Only works on entries in library and if the current chapter plus the next one are already downloaded</string>
     <string name="save_chapter_as_cbz">Save as CBZ archive</string>
-    <string name="split_tall_images">Auto split tall images</string>
-    <string name="split_tall_images_summary">Improves reader performance by splitting tall downloaded images.</string>
+    <string name="split_tall_images">Split tall images</string>
+    <string name="split_tall_images_summary">Improves reader performance</string>
 
-      <!-- Tracking section -->
+    <!-- Tracking section -->
     <string name="tracking_guide">Tracking guide</string>
     <string name="pref_auto_update_manga_sync">Update progress after reading</string>
     <string name="services">Services</string>
@@ -476,6 +484,7 @@
     <string name="pref_clear_cookies">Clear cookies</string>
     <string name="pref_dns_over_https">DNS over HTTPS (DoH)</string>
     <string name="pref_user_agent_string">Default user agent string</string>
+    <string name="error_user_agent_string_blank">User agent string can not be blank</string>
     <string name="pref_reset_user_agent_string">Reset default user agent string</string>
     <string name="requires_app_restart">Requires app restart to take effect</string>
     <string name="cookies_cleared">Cookies cleared</string>
@@ -730,6 +739,7 @@
 
     <!-- Updates fragment -->
     <string name="updating_library">Updating library</string>
+    <string name="update_already_running">An update is already running</string>
     <string name="cant_open_last_read_chapter">Unable to open last read chapter</string>
 
     <!-- History fragment -->
@@ -854,4 +864,8 @@
     <!-- S Pen actions -->
     <string name="spen_previous_page">Previous page</string>
     <string name="spen_next_page">Next page</string>
+
+    <!-- App widget -->
+    <string name="appwidget_updates_description">See your recently updated manga</string>
+    <string name="appwidget_unavailable_locked">Widget not available when app lock is enabled</string>
 </resources>

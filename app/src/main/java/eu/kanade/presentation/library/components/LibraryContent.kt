@@ -6,6 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import com.google.accompanist.pager.rememberPagerState
@@ -21,12 +26,14 @@ import eu.kanade.tachiyomi.data.database.models.LibraryManga
 import eu.kanade.tachiyomi.ui.library.LibraryItem
 import eu.kanade.tachiyomi.ui.library.setting.DisplayModeSetting
 import eu.kanade.tachiyomi.widget.EmptyView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun LibraryContent(
     state: LibraryState,
     contentPadding: PaddingValues,
-    currentPage: Int,
+    currentPage: () -> Int,
     isLibraryEmpty: Boolean,
     isDownloadOnly: Boolean,
     isIncognitoMode: Boolean,
@@ -35,20 +42,24 @@ fun LibraryContent(
     onChangeCurrentPage: (Int) -> Unit,
     onMangaClicked: (Long) -> Unit,
     onToggleSelection: (LibraryManga) -> Unit,
-    onRefresh: (Category?) -> Unit,
+    onRefresh: (Category?) -> Boolean,
     onGlobalSearchClicked: () -> Unit,
     getNumberOfMangaForCategory: @Composable (Long) -> State<Int?>,
     getDisplayModeForPage: @Composable (Int) -> State<DisplayModeSetting>,
     getColumnsForOrientation: (Boolean) -> PreferenceMutableState<Int>,
     getLibraryForPage: @Composable (Int) -> State<List<LibraryItem>>,
 ) {
-    val categories = state.categories
-    val pagerState = rememberPagerState(currentPage.coerceAtMost(categories.lastIndex))
-
     Column(
         modifier = Modifier.padding(contentPadding),
     ) {
-        if (showPageTabs && categories.size > 1) {
+        val categories = state.categories
+        val coercedCurrentPage = remember { currentPage().coerceAtMost(categories.lastIndex) }
+        val pagerState = rememberPagerState(coercedCurrentPage)
+
+        val scope = rememberCoroutineScope()
+        var isRefreshing by remember(pagerState.currentPage) { mutableStateOf(false) }
+
+        if (isLibraryEmpty.not() && showPageTabs && categories.size > 1) {
             LibraryTabs(
                 state = pagerState,
                 categories = categories,
@@ -71,8 +82,17 @@ fun LibraryContent(
         }
 
         SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing = false),
-            onRefresh = { onRefresh(categories[currentPage]) },
+            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+            onRefresh = {
+                val started = onRefresh(categories[currentPage()])
+                if (!started) return@SwipeRefresh
+                scope.launch {
+                    // Fake refresh status but hide it after a second as it's a long running task
+                    isRefreshing = true
+                    delay(1000)
+                    isRefreshing = false
+                }
+            },
             indicator = { s, trigger ->
                 SwipeRefreshIndicator(
                     state = s,

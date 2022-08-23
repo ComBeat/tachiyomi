@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -26,8 +27,8 @@ android {
         applicationId = "eu.kanade.tachiyomi"
         minSdk = AndroidConfig.minSdk
         targetSdk = AndroidConfig.targetSdk
-        versionCode = 81
-        versionName = "0.13.5"
+        versionCode = 82
+        versionName = "0.13.6"
 
         buildConfigField("String", "COMMIT_COUNT", "\"${getCommitCount()}\"")
         buildConfigField("String", "COMMIT_SHA", "\"${getGitSha()}\"")
@@ -176,9 +177,6 @@ dependencies {
     implementation(kotlinx.reflect)
     implementation(kotlinx.bundles.coroutines)
 
-    // Source models and interfaces from Tachiyomi 1.x
-    implementation(libs.tachiyomi.api)
-
     // AndroidX libraries
     implementation(androidx.annotation)
     implementation(androidx.appcompat)
@@ -189,6 +187,7 @@ dependencies {
     implementation(androidx.splashscreen)
     implementation(androidx.recyclerview)
     implementation(androidx.viewpager)
+    implementation(androidx.glance)
 
     implementation(androidx.bundles.lifecycle)
 
@@ -246,7 +245,6 @@ dependencies {
     implementation(libs.androidprocessbutton)
     implementation(libs.flexible.adapter.core)
     implementation(libs.flexible.adapter.ui)
-    implementation(libs.viewstatepageradapter)
     implementation(libs.photoview)
     implementation(libs.directionalviewpager) {
         exclude(group = "androidx.viewpager", module = "viewpager")
@@ -280,36 +278,46 @@ dependencies {
 }
 
 tasks {
+    val localesConfigTask = registerLocalesConfigTask(project)
+
     withType<Test> {
         useJUnitPlatform()
         testLogging {
-            events("passed", "skipped", "failed")
+            events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         }
+    }
+
+    withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
+        exclude { it.file.path.contains("generated[\\\\/]".toRegex())}
     }
 
     // See https://kotlinlang.org/docs/reference/experimental.html#experimental-status-of-experimental-api(-markers)
     withType<KotlinCompile> {
         kotlinOptions.freeCompilerArgs += listOf(
-            "-opt-in=kotlinx.coroutines.InternalCoroutinesApi",
             "-opt-in=coil.annotation.ExperimentalCoilApi",
+            "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi",
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
             "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
             "-opt-in=androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi",
             "-opt-in=androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi",
-            "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi",
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-opt-in=kotlinx.coroutines.FlowPreview",
+            "-opt-in=kotlinx.coroutines.InternalCoroutinesApi",
+            "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
         )
     }
 
     // Duplicating Hebrew string assets due to some locale code issues on different devices
-    val copyHebrewStrings = task("copyHebrewStrings", type = Copy::class) {
+    val copyHebrewStrings by registering(Copy::class) {
         from("./src/main/res/values-he")
         into("./src/main/res/values-iw")
         include("**/*")
     }
 
     preBuild {
-        dependsOn(formatKotlin, copyHebrewStrings)
+        val ktlintTask = if (System.getenv("GITHUB_BASE_REF") == null) formatKotlin else lintKotlin
+        dependsOn(ktlintTask, copyHebrewStrings, localesConfigTask)
     }
 }
 

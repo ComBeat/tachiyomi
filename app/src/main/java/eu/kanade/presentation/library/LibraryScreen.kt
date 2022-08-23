@@ -1,10 +1,17 @@
 package eu.kanade.presentation.library
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import eu.kanade.domain.category.model.Category
 import eu.kanade.presentation.components.LibraryBottomActionMenu
 import eu.kanade.presentation.components.LoadingScreen
@@ -28,23 +35,31 @@ fun LibraryScreen(
     onClickSelectAll: () -> Unit,
     onClickInvertSelection: () -> Unit,
     onClickFilter: () -> Unit,
-    onClickRefresh: (Category?) -> Unit,
+    onClickRefresh: (Category?) -> Boolean,
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val insets = WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
     Crossfade(targetState = presenter.isLoading) { state ->
         when (state) {
             true -> LoadingScreen()
             false -> Scaffold(
-                modifier = Modifier.safeDrawingPadding(),
+                modifier = Modifier
+                    .windowInsetsPadding(insets)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     val title by presenter.getToolbarTitle()
+                    val tabVisible = presenter.tabVisibility && presenter.categories.size > 1
                     LibraryToolbar(
                         state = presenter,
                         title = title,
+                        incognitoMode = !tabVisible && presenter.isIncognitoMode,
+                        downloadedOnlyMode = !tabVisible && presenter.isDownloadOnly,
                         onClickUnselectAll = onClickUnselectAll,
                         onClickSelectAll = onClickSelectAll,
                         onClickInvertSelection = onClickInvertSelection,
                         onClickFilter = onClickFilter,
                         onClickRefresh = { onClickRefresh(null) },
+                        scrollBehavior = scrollBehavior.takeIf { !tabVisible }, // For scroll overlay when no tab
                     )
                 },
                 bottomBar = {
@@ -61,8 +76,8 @@ fun LibraryScreen(
                 LibraryContent(
                     state = presenter,
                     contentPadding = paddingValues,
-                    currentPage = presenter.activeCategory,
-                    isLibraryEmpty = presenter.loadedManga.isEmpty(),
+                    currentPage = { presenter.activeCategory },
+                    isLibraryEmpty = presenter.isLibraryEmpty,
                     showPageTabs = presenter.tabVisibility,
                     showMangaCount = presenter.mangaCountVisibility,
                     onChangeCurrentPage = { presenter.activeCategory = it },

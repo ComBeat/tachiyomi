@@ -277,10 +277,12 @@ class PreferencesHelper(val context: Context) {
 
     fun pinnedSources() = flowPrefs.getStringSet("pinned_catalogues", emptySet())
 
-    fun downloadNewChapter() = flowPrefs.getBoolean("download_new", false)
+    fun downloadNewChapters() = flowPrefs.getBoolean("download_new", false)
 
     fun downloadNewChapterCategories() = flowPrefs.getStringSet("download_new_categories", emptySet())
     fun downloadNewChapterCategoriesExclude() = flowPrefs.getStringSet("download_new_categories_exclude", emptySet())
+
+    fun autoDownloadWhileReading() = flowPrefs.getInt("auto_download_while_reading", 0)
 
     fun defaultCategory() = prefs.getInt(Keys.defaultCategory, -1)
 
@@ -296,7 +298,7 @@ class PreferencesHelper(val context: Context) {
 
     fun dohProvider() = prefs.getInt(Keys.dohProvider, -1)
 
-    fun defaultUserAgent() = flowPrefs.getString(Keys.defaultUserAgent, "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.44")
+    fun defaultUserAgent() = flowPrefs.getString(Keys.defaultUserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0")
 
     fun lastSearchQuerySearchSettings() = flowPrefs.getString("last_search_query", "")
 

@@ -19,11 +19,13 @@ object PreferenceValues {
     /* ktlint-disable experimental:enum-entry-name-case */
 
     // Keys are lowercase to match legacy string values
+    /* ktlint-disable enum-entry-name-case */
     enum class ThemeMode {
         light,
         dark,
         system,
     }
+    /* ktlint-enable enum-entry-name-case */
 
     /* ktlint-enable experimental:enum-entry-name-case */
 
@@ -36,6 +38,7 @@ object PreferenceValues {
         STRAWBERRY_DAIQUIRI(R.string.theme_strawberrydaiquiri),
         TAKO(R.string.theme_tako),
         TEALTURQUOISE(R.string.theme_tealturquoise),
+        TIDAL_WAVE(R.string.theme_tidalwave),
         YINYANG(R.string.theme_yinyang),
         YOTSUBA(R.string.theme_yotsuba),
 

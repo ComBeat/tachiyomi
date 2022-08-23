@@ -12,13 +12,14 @@ import androidx.preference.PreferenceScreen
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hippo.unifile.UniFile
 import eu.kanade.domain.category.interactor.GetCategories
-import eu.kanade.domain.category.model.Category
+import eu.kanade.presentation.category.visualName
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.ui.base.controller.DialogController
 import eu.kanade.tachiyomi.util.preference.bindTo
 import eu.kanade.tachiyomi.util.preference.defaultValue
 import eu.kanade.tachiyomi.util.preference.entriesRes
+import eu.kanade.tachiyomi.util.preference.infoPreference
 import eu.kanade.tachiyomi.util.preference.intListPreference
 import eu.kanade.tachiyomi.util.preference.multiSelectListPreference
 import eu.kanade.tachiyomi.util.preference.onClick
@@ -46,8 +47,7 @@ class SettingsDownloadController : SettingsController() {
     override fun setupPreferenceScreen(screen: PreferenceScreen) = screen.apply {
         titleRes = R.string.pref_category_downloads
 
-        val dbCategories = runBlocking { getCategories.await() }
-        val categories = listOf(Category.default(context)) + dbCategories
+        val categories = runBlocking { getCategories.await() }
 
         preference {
             bindTo(preferences.downloadsDirectory())
@@ -111,7 +111,7 @@ class SettingsDownloadController : SettingsController() {
             multiSelectListPreference {
                 bindTo(preferences.removeExcludeCategories())
                 titleRes = R.string.pref_remove_exclude_categories
-                entries = categories.map { it.name }.toTypedArray()
+                entries = categories.map { it.visualName(context) }.toTypedArray()
                 entryValues = categories.map { it.id.toString() }.toTypedArray()
 
                 preferences.removeExcludeCategories().asFlow()
@@ -123,17 +123,17 @@ class SettingsDownloadController : SettingsController() {
                         summary = if (selected.isEmpty()) {
                             resources?.getString(R.string.none)
                         } else {
-                            selected.joinToString { it.name }
+                            selected.joinToString { it.visualName(context) }
                         }
                     }.launchIn(viewScope)
             }
         }
 
         preferenceCategory {
-            titleRes = R.string.pref_category_auto_download
+            titleRes = R.string.pref_download_new
 
             switchPreference {
-                bindTo(preferences.downloadNewChapter())
+                bindTo(preferences.downloadNewChapters())
                 titleRes = R.string.pref_download_new
             }
             preference {
@@ -143,7 +143,7 @@ class SettingsDownloadController : SettingsController() {
                     DownloadCategoriesDialog().showDialog(router)
                 }
 
-                visibleIf(preferences.downloadNewChapter()) { it }
+                visibleIf(preferences.downloadNewChapters()) { it }
 
                 fun updateSummary() {
                     val selectedCategories = preferences.downloadNewChapterCategories().get()
@@ -152,7 +152,7 @@ class SettingsDownloadController : SettingsController() {
                     val includedItemsText = if (selectedCategories.isEmpty()) {
                         context.getString(R.string.all)
                     } else {
-                        selectedCategories.joinToString { it.name }
+                        selectedCategories.joinToString { it.visualName(context) }
                     }
 
                     val excludedCategories = preferences.downloadNewChapterCategoriesExclude().get()
@@ -161,7 +161,7 @@ class SettingsDownloadController : SettingsController() {
                     val excludedItemsText = if (excludedCategories.isEmpty()) {
                         context.getString(R.string.none)
                     } else {
-                        excludedCategories.joinToString { it.name }
+                        excludedCategories.joinToString { it.visualName(context) }
                     }
 
                     summary = buildSpannedString {
@@ -178,6 +178,25 @@ class SettingsDownloadController : SettingsController() {
                     .onEach { updateSummary() }
                     .launchIn(viewScope)
             }
+        }
+
+        preferenceCategory {
+            titleRes = R.string.download_ahead
+
+            intListPreference {
+                bindTo(preferences.autoDownloadWhileReading())
+                titleRes = R.string.auto_download_while_reading
+                entries = arrayOf(
+                    context.getString(R.string.disabled),
+                    context.resources.getQuantityString(R.plurals.next_unread_chapters, 2, 2),
+                    context.resources.getQuantityString(R.plurals.next_unread_chapters, 3, 3),
+                    context.resources.getQuantityString(R.plurals.next_unread_chapters, 5, 5),
+                    context.resources.getQuantityString(R.plurals.next_unread_chapters, 10, 10),
+                )
+                entryValues = arrayOf("0", "2", "3", "5", "10")
+                summary = "%s"
+            }
+            infoPreference(R.string.download_ahead_info)
         }
     }
 
@@ -255,10 +274,9 @@ class SettingsDownloadController : SettingsController() {
         private val getCategories: GetCategories = Injekt.get()
 
         override fun onCreateDialog(savedViewState: Bundle?): Dialog {
-            val dbCategories = runBlocking { getCategories.await() }
-            val categories = listOf(Category.default(activity!!)) + dbCategories
+            val categories = runBlocking { getCategories.await() }
 
-            val items = categories.map { it.name }
+            val items = categories.map { it.visualName(activity!!) }
             var selected = categories
                 .map {
                     when (it.id.toString()) {

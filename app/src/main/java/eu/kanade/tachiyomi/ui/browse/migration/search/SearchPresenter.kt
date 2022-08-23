@@ -13,7 +13,6 @@ import eu.kanade.domain.manga.model.Manga
 import eu.kanade.domain.manga.model.MangaUpdate
 import eu.kanade.domain.manga.model.hasCustomCover
 import eu.kanade.domain.manga.model.toDbManga
-import eu.kanade.domain.manga.model.toMangaInfo
 import eu.kanade.domain.track.interactor.GetTracks
 import eu.kanade.domain.track.interactor.InsertTrack
 import eu.kanade.tachiyomi.data.cache.CoverCache
@@ -23,13 +22,11 @@ import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.model.toSChapter
 import eu.kanade.tachiyomi.ui.browse.migration.MigrationFlags
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchCardItem
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchItem
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchPresenter
 import eu.kanade.tachiyomi.util.lang.launchIO
-import eu.kanade.tachiyomi.util.lang.launchUI
 import eu.kanade.tachiyomi.util.lang.withUIContext
 import eu.kanade.tachiyomi.util.system.toast
 import uy.kohesive.injekt.Injekt
@@ -90,15 +87,14 @@ class SearchPresenter(
 
         presenterScope.launchIO {
             try {
-                val chapters = source.getChapterList(manga.toMangaInfo())
-                    .map { it.toSChapter() }
+                val chapters = source.getChapterList(manga.toSManga())
 
                 migrateMangaInternal(prevSource, source, chapters, prevManga, manga, replace)
             } catch (e: Throwable) {
                 withUIContext { view?.applicationContext?.toast(e.message) }
             }
 
-            presenterScope.launchUI { replacingMangaRelay.call(Pair(false, manga)) }
+            withUIContext { replacingMangaRelay.call(Pair(false, manga)) }
         }
     }
 

@@ -12,12 +12,12 @@ class ReorderCategory(
     private val categoryRepository: CategoryRepository,
 ) {
 
-    suspend fun await(categoryId: Long, newPosition: Int) = withContext(NonCancellable) await@{
-        val categories = categoryRepository.getAll()
+    suspend fun await(categoryId: Long, newPosition: Int) = withContext(NonCancellable) {
+        val categories = categoryRepository.getAll().filterNot(Category::isSystemCategory)
 
         val currentIndex = categories.indexOfFirst { it.id == categoryId }
         if (currentIndex == newPosition) {
-            return@await Result.Unchanged
+            return@withContext Result.Unchanged
         }
 
         val reorderedCategories = categories.toMutableList()

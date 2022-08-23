@@ -29,11 +29,12 @@ fun Manga.prepUpdateCover(coverCache: CoverCache, remoteManga: SManga, refreshSa
 
     if (!refreshSameUrl && thumbnail_url == newUrl) return
 
+    val domainManga = toDomainManga()!!
     when {
-        toDomainManga()!!.isLocal() -> {
+        domainManga.isLocal() -> {
             cover_last_modified = Date().time
         }
-        toDomainManga()!!.hasCustomCover(coverCache) -> {
+        domainManga.hasCustomCover(coverCache) -> {
             coverCache.deleteFromCache(this, false)
         }
         else -> {
@@ -50,17 +51,17 @@ fun Manga.removeCovers(coverCache: CoverCache = Injekt.get()): Int {
     return coverCache.deleteFromCache(this, true)
 }
 
-fun DomainManga.shouldDownloadNewChapters(dbCategories: List<Long>, prefs: PreferencesHelper): Boolean {
+fun DomainManga.shouldDownloadNewChapters(dbCategories: List<Long>, preferences: PreferencesHelper): Boolean {
     if (!favorite) return false
 
     val categories = dbCategories.ifEmpty { listOf(0L) }
 
     // Boolean to determine if user wants to automatically download new chapters.
-    val downloadNewChapter = prefs.downloadNewChapter().get()
-    if (!downloadNewChapter) return false
+    val downloadNewChapters = preferences.downloadNewChapters().get()
+    if (!downloadNewChapters) return false
 
-    val includedCategories = prefs.downloadNewChapterCategories().get().map { it.toLong() }
-    val excludedCategories = prefs.downloadNewChapterCategoriesExclude().get().map { it.toLong() }
+    val includedCategories = preferences.downloadNewChapterCategories().get().map { it.toLong() }
+    val excludedCategories = preferences.downloadNewChapterCategoriesExclude().get().map { it.toLong() }
 
     // Default: Download from all categories
     if (includedCategories.isEmpty() && excludedCategories.isEmpty()) return true
@@ -80,15 +81,12 @@ suspend fun DomainManga.editCover(
     stream: InputStream,
     updateManga: UpdateManga = Injekt.get(),
     coverCache: CoverCache = Injekt.get(),
-): Boolean {
-    return if (isLocal()) {
+) {
+    if (isLocal()) {
         LocalSource.updateCover(context, toDbManga(), stream)
         updateManga.awaitUpdateCoverLastModified(id)
     } else if (favorite) {
         coverCache.setCustomCoverToCache(toDbManga(), stream)
         updateManga.awaitUpdateCoverLastModified(id)
-    } else {
-        // We should never reach this block
-        false
     }
 }

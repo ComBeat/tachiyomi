@@ -8,7 +8,6 @@ import eu.kanade.domain.manga.model.toDbManga
 import eu.kanade.domain.manga.model.toMangaUpdate
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.database.models.toDomainManga
-import eu.kanade.tachiyomi.data.database.models.toMangaInfo
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.extension.ExtensionManager
 import eu.kanade.tachiyomi.source.CatalogueSource
@@ -16,7 +15,6 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.model.toSManga
 import eu.kanade.tachiyomi.ui.base.presenter.BasePresenter
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourcePresenter
 import eu.kanade.tachiyomi.util.lang.runAsObservable
@@ -32,14 +30,6 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import uy.kohesive.injekt.injectLazy
 
-/**
- * Presenter of [GlobalSearchController]
- * Function calls should be done from here. UI calls should be done from the controller.
- *
- * @param sourceManager manages the different sources.
- * @param db manages the database calls.
- * @param preferences manages the preference calls.
- */
 open class GlobalSearchPresenter(
     private val initialQuery: String? = "",
     private val initialExtensionFilter: String? = null,
@@ -253,10 +243,10 @@ open class GlobalSearchPresenter(
      * @return The initialized manga.
      */
     private suspend fun getMangaDetails(manga: Manga, source: Source): Manga {
-        val networkManga = source.getMangaDetails(manga.toMangaInfo())
-        manga.copyFrom(networkManga.toSManga())
+        val networkManga = source.getMangaDetails(manga.copy())
+        manga.copyFrom(networkManga)
         manga.initialized = true
-        runBlocking { updateManga.await(manga.toDomainManga()!!.toMangaUpdate()) }
+        updateManga.await(manga.toDomainManga()!!.toMangaUpdate())
         return manga
     }
 

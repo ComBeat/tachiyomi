@@ -4,11 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import com.bluelinelabs.conductor.Router
-import eu.kanade.domain.category.interactor.UpdateCategory
-import eu.kanade.domain.category.model.CategoryUpdate
+import eu.kanade.domain.category.interactor.SetDisplayModeForCategory
+import eu.kanade.domain.category.interactor.SetSortModeForCategory
+import eu.kanade.domain.category.model.Category
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.data.database.models.Category
-import eu.kanade.tachiyomi.data.database.models.toDomainCategory
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.data.track.TrackManager
 import eu.kanade.tachiyomi.data.track.TrackService
@@ -29,7 +28,8 @@ import uy.kohesive.injekt.injectLazy
 class LibrarySettingsSheet(
     router: Router,
     private val trackManager: TrackManager = Injekt.get(),
-    private val updateCategory: UpdateCategory = Injekt.get(),
+    private val setDisplayModeForCategory: SetDisplayModeForCategory = Injekt.get(),
+    private val setSortModeForCategory: SetSortModeForCategory = Injekt.get(),
     onGroupClickListener: (ExtendedNavigationView.Group) -> Unit,
 ) : TabbedBottomSheetDialog(router.activity!!) {
 
@@ -202,8 +202,8 @@ class LibrarySettingsSheet(
             override val footer = null
 
             override fun initModels() {
-                val sorting = SortModeSetting.get(preferences, currentCategory?.toDomainCategory())
-                val order = if (SortDirectionSetting.get(preferences, currentCategory?.toDomainCategory()) == SortDirectionSetting.ASCENDING) {
+                val sorting = SortModeSetting.get(preferences, currentCategory)
+                val order = if (SortDirectionSetting.get(currentCategory) == SortDirectionSetting.ASCENDING) {
                     Item.MultiSort.SORT_ASC
                 } else {
                     Item.MultiSort.SORT_DESC
@@ -242,37 +242,13 @@ class LibrarySettingsSheet(
                     else -> throw Exception("Unknown state")
                 }
 
-                setSortModePreference(item)
-
-                setSortDirectionPreference(item)
+                setSortPreference(item)
 
                 item.group.items.forEach { adapter.notifyItemChanged(it) }
             }
 
-            private fun setSortDirectionPreference(item: Item.MultiStateGroup) {
-                val flag = if (item.state == Item.MultiSort.SORT_ASC) {
-                    SortDirectionSetting.ASCENDING
-                } else {
-                    SortDirectionSetting.DESCENDING
-                }
-
-                if (preferences.categorizedDisplaySettings().get() && currentCategory != null && currentCategory?.id != 0) {
-                    currentCategory?.sortDirection = flag.flag.toInt()
-                    sheetScope.launchIO {
-                        updateCategory.await(
-                            CategoryUpdate(
-                                id = currentCategory!!.id?.toLong()!!,
-                                flags = currentCategory!!.flags.toLong(),
-                            ),
-                        )
-                    }
-                } else {
-                    preferences.librarySortingAscending().set(flag)
-                }
-            }
-
-            private fun setSortModePreference(item: Item) {
-                val flag = when (item) {
+            private fun setSortPreference(item: Item.MultiStateGroup) {
+                val mode = when (item) {
                     alphabetically -> SortModeSetting.ALPHABETICAL
                     lastRead -> SortModeSetting.LAST_READ
                     lastChecked -> SortModeSetting.LAST_MANGA_UPDATE
@@ -283,19 +259,14 @@ class LibrarySettingsSheet(
                     dateAdded -> SortModeSetting.DATE_ADDED
                     else -> throw NotImplementedError("Unknown display mode")
                 }
-
-                if (preferences.categorizedDisplaySettings().get() && currentCategory != null && currentCategory?.id != 0) {
-                    currentCategory?.sortMode = flag.flag.toInt()
-                    sheetScope.launchIO {
-                        updateCategory.await(
-                            CategoryUpdate(
-                                id = currentCategory!!.id?.toLong()!!,
-                                flags = currentCategory!!.flags.toLong(),
-                            ),
-                        )
-                    }
+                val direction = if (item.state == Item.MultiSort.SORT_ASC) {
+                    SortDirectionSetting.ASCENDING
                 } else {
-                    preferences.librarySortingMode().set(flag)
+                    SortDirectionSetting.DESCENDING
+                }
+
+                sheetScope.launchIO {
+                    setSortModeForCategory.await(currentCategory!!, mode, direction)
                 }
             }
         }
@@ -327,8 +298,8 @@ class LibrarySettingsSheet(
 
         // Gets user preference of currently selected display mode at current category
         private fun getDisplayModePreference(): DisplayModeSetting {
-            return if (preferences.categorizedDisplaySettings().get() && currentCategory != null && currentCategory?.id != 0) {
-                DisplayModeSetting.fromFlag(currentCategory?.displayMode?.toLong())
+            return if (currentCategory != null && preferences.categorizedDisplaySettings().get()) {
+                DisplayModeSetting.fromFlag(currentCategory!!.displayMode)
             } else {
                 preferences.libraryDisplayMode().get()
             }
@@ -379,18 +350,8 @@ class LibrarySettingsSheet(
                     else -> throw NotImplementedError("Unknown display mode")
                 }
 
-                if (preferences.categorizedDisplaySettings().get() && currentCategory != null && currentCategory?.id != 0) {
-                    currentCategory?.displayMode = flag.flag.toInt()
-                    sheetScope.launchIO {
-                        updateCategory.await(
-                            CategoryUpdate(
-                                id = currentCategory!!.id?.toLong()!!,
-                                flags = currentCategory!!.flags.toLong(),
-                            ),
-                        )
-                    }
-                } else {
-                    preferences.libraryDisplayMode().set(flag)
+                sheetScope.launchIO {
+                    setDisplayModeForCategory.await(currentCategory!!, flag)
                 }
             }
         }

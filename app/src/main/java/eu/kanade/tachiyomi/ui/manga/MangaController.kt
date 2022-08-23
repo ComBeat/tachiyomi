@@ -8,17 +8,12 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
@@ -28,6 +23,7 @@ import eu.kanade.domain.category.model.Category
 import eu.kanade.domain.manga.model.Manga
 import eu.kanade.domain.manga.model.toDbManga
 import eu.kanade.presentation.components.ChapterDownloadAction
+import eu.kanade.presentation.components.LoadingScreen
 import eu.kanade.presentation.manga.DownloadAction
 import eu.kanade.presentation.manga.MangaScreen
 import eu.kanade.presentation.util.calculateWindowWidthSizeClass
@@ -65,6 +61,7 @@ import eu.kanade.tachiyomi.util.system.toast
 import eu.kanade.tachiyomi.widget.materialdialogs.QuadStateTextView
 import eu.kanade.tachiyomi.widget.materialdialogs.await
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import logcat.LogPriority
 import eu.kanade.domain.chapter.model.Chapter as DomainChapter
 
@@ -147,16 +144,19 @@ class MangaController :
                 onInvertSelection = presenter::invertSelection,
             )
         } else {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingScreen()
         }
     }
 
     // Let compose view handle this
     override fun handleBack(): Boolean {
-        (activity as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher?.onBackPressed()
-        return true
+        val dispatcher = (activity as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher ?: return false
+        return if (dispatcher.hasEnabledCallbacks()) {
+            dispatcher.onBackPressed()
+            true
+        } else {
+            false
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
@@ -220,7 +220,7 @@ class MangaController :
                 }
             } else null,
             onRequireCategory = { manga, categories ->
-                val ids = presenter.getMangaCategoryIds(manga)
+                val ids = runBlocking { presenter.getMangaCategoryIds(manga) }
                 val preselected = categories.map {
                     if (it.id in ids) {
                         QuadStateTextView.State.CHECKED.ordinal
